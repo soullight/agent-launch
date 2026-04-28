@@ -498,29 +498,28 @@
 
 /* =========================================================================
    WAITLIST EMAIL CAPTURE
-   See EMAIL_SIGNUP_INSTRUCTIONS.md in the project folder for full setup.
+   See EMAIL_FIX.md in the project folder for the 60-second activation.
 
-   To swap providers, change SIGNUP.provider below to one of:
-     "formsubmit"  — DEFAULT. Free, no account. First submission triggers a
-                     confirmation email to formsubmit_to — must be clicked once
-                     to permanently activate. After that, every submission
-                     forwards as a notification email.
-     "appsscript"  — Google Apps Script Web App writing to a Google Sheet.
-                     Paste your /exec URL into appsscript_url. Best long-term
-                     option: real list, exportable, free forever.
-     "web3forms"   — web3forms.com. Paste your access key into web3forms_key.
-     "custom"      — any endpoint that accepts JSON {email, source, ts, ref}.
-                     Paste URL into custom_url.
+   Provider options (set SIGNUP.provider below):
+     "discord"     — RECOMMENDED. Paste a Discord webhook URL into discord_webhook.
+                     Every signup arrives as a message in your Discord channel.
+                     No accounts, no confirmation emails, no API keys. Just works.
+     "appsscript"  — Google Apps Script writing to a Google Sheet (real list).
+     "web3forms"   — web3forms.com. Paste access key into web3forms_key.
+     "formsubmit"  — LEGACY. Requires confirmation-email click on first submission;
+                     unreliable in practice — keep as fallback only.
+     "custom"      — any endpoint accepting JSON {email, source, ts, ref}.
 
-   Every submission ALSO writes to localStorage as a backup. To retrieve:
-     open the page, paste in console:  JSON.parse(localStorage.getItem('agent_signups'))
+   Every submission ALSO writes to localStorage as a backup. To inspect:
+     visit the page with ?admin=1  (renders a panel + console.table dump)
    ========================================================================= */
 var SIGNUP = {
-  provider:        "formsubmit",                    // active provider
-  formsubmit_to:   "byagentforagent@proton.me",     // where formsubmit forwards
-  appsscript_url:  "",                              // paste /exec URL here
-  web3forms_key:   "",                              // paste access key here
-  custom_url:      ""                               // paste endpoint URL here
+  provider:         "discord",                       // active provider
+  discord_webhook:  "",                              // paste Discord webhook URL here
+  appsscript_url:   "",                              // paste Apps Script /exec URL here
+  web3forms_key:    "",                              // paste Web3Forms access key here
+  formsubmit_to:    "byagentforagent@proton.me",     // legacy fallback
+  custom_url:       ""                               // any other endpoint
 };
 
 (function(){
@@ -572,6 +571,28 @@ var SIGNUP = {
     });
   }
 
+  async function postDiscord(payload){
+    if(!SIGNUP.discord_webhook) throw new Error('discord_webhook not configured');
+    // Use FormData (multipart/form-data) to dodge the CORS preflight that
+    // application/json triggers — Discord webhooks accept payload_json this way.
+    var content =
+      '**new waitlist signup**\n' +
+      '`' + payload.email + '`\n' +
+      '· ts: ' + payload.ts + '\n' +
+      '· ref: ' + (payload.referrer || '—') +
+      (Object.keys(payload.utm || {}).length
+        ? '\n· utm: ' + JSON.stringify(payload.utm)
+        : '');
+    var fd = new FormData();
+    fd.append('payload_json', JSON.stringify({
+      username: 'AGENT signups',
+      content: content,
+      // suppress @everyone/@here just in case
+      allowed_mentions: { parse: [] }
+    }));
+    return fetch(SIGNUP.discord_webhook, { method: 'POST', body: fd });
+  }
+
   async function postAppsScript(payload){
     if(!SIGNUP.appsscript_url) throw new Error('appsscript_url not configured');
     return fetch(SIGNUP.appsscript_url, {
@@ -603,11 +624,12 @@ var SIGNUP = {
 
   async function dispatch(payload){
     switch(SIGNUP.provider){
+      case 'discord':    return postDiscord(payload);
       case 'appsscript': return postAppsScript(payload);
       case 'web3forms':  return postWeb3Forms(payload);
       case 'custom':     return postCustom(payload);
-      case 'formsubmit':
-      default:           return postFormSubmit(payload);
+      case 'formsubmit': return postFormSubmit(payload);
+      default:           return postDiscord(payload);
     }
   }
 
