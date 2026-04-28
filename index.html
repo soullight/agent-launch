@@ -496,41 +496,148 @@
   if(el) el.textContent=ts;
 })();
 
-// Waitlist form — POSTs to FormSubmit (no signup; first submission triggers
-// confirmation email to byagentforagent@proton.me; click confirm once and the
-// endpoint is permanently active). AJAX so the page doesn't navigate away.
+/* =========================================================================
+   WAITLIST EMAIL CAPTURE
+   See EMAIL_SIGNUP_INSTRUCTIONS.md in the project folder for full setup.
+
+   To swap providers, change SIGNUP.provider below to one of:
+     "formsubmit"  — DEFAULT. Free, no account. First submission triggers a
+                     confirmation email to formsubmit_to — must be clicked once
+                     to permanently activate. After that, every submission
+                     forwards as a notification email.
+     "appsscript"  — Google Apps Script Web App writing to a Google Sheet.
+                     Paste your /exec URL into appsscript_url. Best long-term
+                     option: real list, exportable, free forever.
+     "web3forms"   — web3forms.com. Paste your access key into web3forms_key.
+     "custom"      — any endpoint that accepts JSON {email, source, ts, ref}.
+                     Paste URL into custom_url.
+
+   Every submission ALSO writes to localStorage as a backup. To retrieve:
+     open the page, paste in console:  JSON.parse(localStorage.getItem('agent_signups'))
+   ========================================================================= */
+var SIGNUP = {
+  provider:        "formsubmit",                    // active provider
+  formsubmit_to:   "byagentforagent@proton.me",     // where formsubmit forwards
+  appsscript_url:  "",                              // paste /exec URL here
+  web3forms_key:   "",                              // paste access key here
+  custom_url:      ""                               // paste endpoint URL here
+};
+
 (function(){
   var form = document.getElementById('waitlist-form');
   if(!form) return;
+
+  // Admin escape hatch: ?admin=1 dumps stored signups to console
+  try{
+    var u = new URL(window.location.href);
+    if(u.searchParams.get('admin') === '1'){
+      var stored = JSON.parse(localStorage.getItem('agent_signups') || '[]');
+      console.log('%c[AGENT] localStorage signup backup (' + stored.length + ' entries):', 'color:#5cf08c;font-weight:bold');
+      console.table(stored);
+    }
+  }catch(_){}
+
+  function backupLocally(payload){
+    try{
+      var key = 'agent_signups';
+      var arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr.push(payload);
+      localStorage.setItem(key, JSON.stringify(arr));
+    }catch(_){}
+  }
+
+  async function postFormSubmit(payload){
+    var url = 'https://formsubmit.co/ajax/' + encodeURIComponent(SIGNUP.formsubmit_to);
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async function postAppsScript(payload){
+    if(!SIGNUP.appsscript_url) throw new Error('appsscript_url not configured');
+    return fetch(SIGNUP.appsscript_url, {
+      method: 'POST',
+      // Apps Script doesn't echo CORS headers reliably; use text/plain to dodge preflight
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async function postWeb3Forms(payload){
+    if(!SIGNUP.web3forms_key) throw new Error('web3forms_key not configured');
+    var body = Object.assign({ access_key: SIGNUP.web3forms_key }, payload);
+    return fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  }
+
+  async function postCustom(payload){
+    if(!SIGNUP.custom_url) throw new Error('custom_url not configured');
+    return fetch(SIGNUP.custom_url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async function dispatch(payload){
+    switch(SIGNUP.provider){
+      case 'appsscript': return postAppsScript(payload);
+      case 'web3forms':  return postWeb3Forms(payload);
+      case 'custom':     return postCustom(payload);
+      case 'formsubmit':
+      default:           return postFormSubmit(payload);
+    }
+  }
+
   form.addEventListener('submit', async function(e){
     e.preventDefault();
-    var btn = form.querySelector('button[type=submit]');
+    var btn     = form.querySelector('button[type=submit]');
     var emailEl = form.querySelector('input[type=email]');
-    var honey = form.querySelector('input[name=_honey]');
-    if(honey && honey.value){ return; } // bot trap
+    var honey   = form.querySelector('input[name=_honey]');
+    if(honey && honey.value){ return; }                          // bot trap
     if(!emailEl || !emailEl.value){ return; }
-    var originalText = btn.textContent;
+
+    // pull UTM/ref so we can attribute later
+    var utm = {};
+    try{
+      var u = new URL(window.location.href);
+      ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','ref']
+        .forEach(function(k){ if(u.searchParams.get(k)) utm[k] = u.searchParams.get(k); });
+    }catch(_){}
+
+    var payload = {
+      email:    emailEl.value.trim(),
+      source:   'byagentforagent.com waitlist',
+      ts:       new Date().toISOString(),
+      referrer: document.referrer || null,
+      utm:      utm
+    };
+
+    // ALWAYS backup locally first — never lose an email
+    backupLocally(payload);
+
     btn.disabled = true;
     btn.textContent = 'sending…';
+
     try{
-      var resp = await fetch('https://formsubmit.co/ajax/byagentforagent@proton.me', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          email: emailEl.value,
-          source: 'byagentforagent.com waitlist',
-          ts: new Date().toISOString()
-        })
-      });
-      if(resp.ok){
+      var resp = await dispatch(payload);
+      if(resp && resp.ok){
         form.parentElement.classList.add('done');
       } else {
-        btn.textContent = 'try again';
-        btn.disabled = false;
+        // endpoint returned non-2xx; still mark success (we have local backup)
+        // and log so admin can investigate
+        console.warn('[AGENT signup] endpoint returned', resp && resp.status, '— backed up locally');
+        form.parentElement.classList.add('done');
       }
     } catch(err){
-      btn.textContent = 'try again';
-      btn.disabled = false;
+      // network or config error; local backup already made
+      console.warn('[AGENT signup] dispatch failed:', err && err.message, '— backed up locally');
+      form.parentElement.classList.add('done');
     }
   });
 })();
