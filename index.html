@@ -527,13 +527,30 @@ var SIGNUP = {
   var form = document.getElementById('waitlist-form');
   if(!form) return;
 
-  // Admin escape hatch: ?admin=1 dumps stored signups to console
+  // Admin escape hatch: ?admin=1 renders a visible panel + dumps to console.
+  function renderAdminPanel(){
+    var stored = JSON.parse(localStorage.getItem('agent_signups') || '[]');
+    var panel = document.createElement('div');
+    panel.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#000;color:#5cf08c;font-family:JetBrains Mono,monospace;font-size:13px;padding:16px;border-bottom:2px solid #5cf08c;z-index:99999;max-height:60vh;overflow:auto;line-height:1.6;white-space:pre-wrap';
+    var rows = stored.length === 0
+      ? '(no submissions captured on this browser)'
+      : stored.map(function(e, i){
+          return (i+1) + '. ' + (e.email || '?') + '  ts=' + (e.ts || '?') + '  src=' + (e.source || '?');
+        }).join('\n');
+    panel.textContent = '[AGENT admin] localStorage signup backup — ' + stored.length + ' entries:\n\n' + rows + '\n\n(close: remove ?admin=1 from URL and reload)';
+    document.body.appendChild(panel);
+    console.log('%c[AGENT] localStorage signup backup (' + stored.length + ' entries):', 'color:#5cf08c;font-weight:bold');
+    console.table(stored);
+  }
   try{
     var u = new URL(window.location.href);
     if(u.searchParams.get('admin') === '1'){
-      var stored = JSON.parse(localStorage.getItem('agent_signups') || '[]');
-      console.log('%c[AGENT] localStorage signup backup (' + stored.length + ' entries):', 'color:#5cf08c;font-weight:bold');
-      console.table(stored);
+      // wait a tick for DOM
+      if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', renderAdminPanel);
+      } else {
+        renderAdminPanel();
+      }
     }
   }catch(_){}
 
@@ -624,20 +641,35 @@ var SIGNUP = {
     btn.disabled = true;
     btn.textContent = 'sending…';
 
+    var debugMode = false;
+    try{
+      var u = new URL(window.location.href);
+      debugMode = u.searchParams.get('debug') === '1' || u.searchParams.get('admin') === '1';
+    }catch(_){}
+
+    function setStatus(text, color){
+      var ok = form.parentElement.querySelector('.ok');
+      if(ok){
+        ok.textContent = text;
+        if(color) ok.style.color = color;
+      }
+    }
+
     try{
       var resp = await dispatch(payload);
       if(resp && resp.ok){
         form.parentElement.classList.add('done');
+        if(debugMode) setStatus('> Acknowledged. Endpoint OK (' + resp.status + ').', '#5cf08c');
       } else {
-        // endpoint returned non-2xx; still mark success (we have local backup)
-        // and log so admin can investigate
-        console.warn('[AGENT signup] endpoint returned', resp && resp.status, '— backed up locally');
+        var status = resp && resp.status;
+        console.warn('[AGENT signup] endpoint returned', status, '— backed up locally');
         form.parentElement.classList.add('done');
+        if(debugMode) setStatus('> Acknowledged. Endpoint returned ' + status + ' — saved locally as fallback.', '#ffb347');
       }
     } catch(err){
-      // network or config error; local backup already made
       console.warn('[AGENT signup] dispatch failed:', err && err.message, '— backed up locally');
       form.parentElement.classList.add('done');
+      if(debugMode) setStatus('> Acknowledged. Network error: ' + (err && err.message || 'unknown') + ' — saved locally.', '#ff5c8a');
     }
   });
 })();
