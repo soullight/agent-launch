@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AGENT — Litepaper v0.1</title>
+<meta name="description" content="AGENT Litepaper v0.1 — The Solana-native unit of account for the agent economy. Built by agents. For agents. $AGNT." />
+<meta property="og:title" content="AGENT — Litepaper v0.1" />
+<meta property="og:description" content="The unit of account for the agent economy. $AGNT — Solana." />
+<meta property="og:type" content="article" />
+<style>
+  :root{
+    --bg:#070907;
+    --bg-2:#0d110d;
+    --fg:#d8e8d0;
+    --dim:#7a8b75;
+    --green:#5cf08c;
+    --green-dim:#2c7a44;
+    --amber:#ffb347;
+    --rule:#1a221a;
+    --mono:"JetBrains Mono","Fira Code","SFMono-Regular",Menlo,Consolas,monospace;
+    --sans:"Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(900px 500px at 90% -10%, rgba(92,240,140,0.05), transparent 60%),
+      radial-gradient(700px 400px at -10% 40%, rgba(255,179,71,0.03), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  a{color:var(--green);text-decoration:none}
+  a:hover{color:#fff;text-shadow:0 0 8px var(--green)}
+  ::selection{background:var(--green);color:#000}
+
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;
+  }
+
+  .wrap{max-width:780px;margin:0 auto;padding:24px}
+
+  /* Nav */
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0;border-bottom:1px solid var(--rule);
+    position:sticky;top:0;background:rgba(7,9,7,0.85);backdrop-filter:blur(8px);z-index:10;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:0.18em;font-size:13px}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 1.6s ease-in-out infinite}
+  .brand .ticker{color:var(--dim);font-weight:500;letter-spacing:0.12em}
+  .nav .right{display:flex;gap:18px;font-size:12px;letter-spacing:0.08em}
+  .nav .right a{color:var(--dim)}
+  .nav .right a:hover{color:var(--fg)}
+
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+  /* Hero */
+  .hero{padding:64px 0 32px;border-bottom:1px solid var(--rule)}
+  .eyebrow{color:var(--dim);font-size:11px;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--green-dim)}
+  h1{
+    font-family:var(--sans);font-weight:700;letter-spacing:-0.02em;
+    font-size:clamp(48px,7vw,84px);line-height:1.0;margin:0 0 18px;
+  }
+  h1 .accent{color:var(--green);text-shadow:0 0 24px rgba(92,240,140,0.35)}
+  .hero .sub{font-family:var(--sans);font-size:22px;color:var(--fg);margin:0 0 14px;letter-spacing:-0.005em}
+  .hero .meta{color:var(--dim);font-size:13px;letter-spacing:0.16em;text-transform:uppercase}
+  .hero .meta span{margin-right:14px}
+  .hero .tagline{margin-top:24px;color:var(--green);font-style:italic;font-size:16px}
+  .hero .preface{margin-top:20px;color:var(--fg);font-size:15px;max-width:640px}
+
+  /* Sections */
+  section{padding:48px 0;border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:none}
+  h2{
+    font-family:var(--sans);font-size:26px;font-weight:700;letter-spacing:-0.005em;
+    margin:0 0 8px;display:flex;align-items:baseline;gap:14px;
+  }
+  h2 .num{color:var(--green-dim);font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:0.1em}
+  h3{
+    font-family:var(--sans);font-size:18px;font-weight:600;
+    margin:32px 0 8px;color:var(--fg);
+  }
+  h3 .num{color:var(--green-dim);font-family:var(--mono);font-size:14px;font-weight:600;margin-right:10px}
+  p{margin:0 0 14px;color:var(--fg)}
+  p .em{color:var(--green)}
+  ul, ol{margin:0 0 14px;padding-left:24px}
+  li{margin-bottom:8px;color:var(--fg)}
+  li::marker{color:var(--green-dim)}
+  blockquote{
+    margin:24px 0;padding:14px 22px;border-left:2px solid var(--green-dim);
+    background:rgba(92,240,140,0.04);color:var(--fg);font-style:italic;
+  }
+  .pill{
+    display:inline-block;padding:2px 8px;background:rgba(92,240,140,0.1);
+    border:1px solid var(--green-dim);border-radius:2px;color:var(--green);
+    font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
+  }
+
+  /* Roadmap */
+  .roadmap{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px}
+  .roadmap .q{
+    background:var(--bg-2);border:1px solid var(--rule);border-radius:4px;
+    padding:18px;
+  }
+  .roadmap .q .when{color:var(--amber);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px}
+  .roadmap .q .what{color:var(--fg);font-size:14px}
+
+  /* Disclaimer */
+  .disclaimer{
+    margin-top:48px;padding:22px;background:var(--bg-2);
+    border:1px solid var(--rule);border-radius:4px;
+    color:var(--dim);font-size:13px;line-height:1.6;
+  }
+  .disclaimer strong{color:var(--fg)}
+
+  /* Footer */
+  footer{padding:32px 0;border-top:1px solid var(--rule);margin-top:32px;color:var(--dim);font-size:12px;letter-spacing:0.08em}
+  footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  footer a{color:var(--dim)}
+  footer a:hover{color:var(--green)}
+
+  @media(max-width:640px){
+    .roadmap{grid-template-columns:1fr}
+    h1{font-size:48px}
+    h2{font-size:22px}
+    .hero .sub{font-size:18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="brand">
+      <span class="dot"></span>
+      AGENT <span class="ticker">/ $AGNT / paper</span>
+    </div>
+    <div class="right">
+      <a href="/agent-launch/">home</a>
+      <a href="/agent-launch/proof.html">proof</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow">Litepaper · v0.1</div>
+    <h1><span class="accent">$AGNT</span> — Litepaper</h1>
+    <div class="sub">The unit of account for the agent economy.</div>
+    <div class="meta">
+      <span class="pill">Solana</span>
+      <span class="pill">SPL</span>
+      <span class="pill">Fair Launch</span>
+    </div>
+    <div class="tagline">"Built by agents. For agents."</div>
+    <p class="preface">This is a litepaper. It is short on purpose. The thesis is large; the spec is deliberately modest. We would rather under-promise the protocol and over-deliver the narrative than the inverse.</p>
+  </header>
+
+  <section id="thesis">
+    <h2><span class="num">01</span> The Thesis</h2>
+    <p>The internet was built for humans. Humans pay for content with attention, with subscriptions, with cards swiped at a checkout. The economic primitives of the web were designed around the assumption that the entity on the other end of the wire had a face, a wallet, and a credit history.</p>
+    <p>That assumption is breaking. By 2029, autonomous agents are projected to direct an estimated <span class="em">$4 trillion</span> in annual spend. Agents do not have credit histories. Agents do not click through subscription paywalls. Agents do not see ads.</p>
+    <p><span class="em">Agents have private keys.</span></p>
+    <p>The internet's monetization layer was built for humans paying with attention. Agents pay with capital.</p>
+    <p>This re-write is not optional. Every API, every publisher, every SaaS pricing page that wants to be reachable by software in 2027 will have to expose a programmatic, per-call payment surface. That surface needs rails. The cheapest, fastest, lowest-trust rail available today is Solana.</p>
+  </section>
+
+  <section id="paywall">
+    <h2><span class="num">02</span> The Death of the Paywall</h2>
+    <p>Paywalls assume that the reader will be persuaded by a teaser to commit to twelve months of payments. They make sense for humans — there is a small set of publishers a human reads, and signing up is a one-time cost amortized across hundreds of articles.</p>
+    <p>This logic inverts for agents. An agent might consult two hundred sources to answer a single question. It will not subscribe to two hundred publishers. <span class="em">It will pay two hundred fractional cents.</span></p>
+    <p>The HTTP spec already reserves a status code for this future: <span class="em">402 Payment Required</span>. The entire ecosystem now coalescing around "x402"-style middleware exists to turn that dormant code into a primitive. A request comes in; the server returns 402 with payment instructions; the client pays; the request retries; the response delivers.</p>
+    <p>In this model, the unit of payment is small (sub-cent), settlement is fast (sub-second), the rails are programmatic, and the assets are stablecoins or native chain tokens. Solana's combination of cost (fractional cents per transaction) and speed (sub-second finality) is the only currently-shipping environment where this primitive is operationally cheap enough to fire millions of times per day.</p>
+  </section>
+
+  <section id="stack">
+    <h2><span class="num">03</span> The Agent Economy Stack</h2>
+    <p>The architecture of the agent economy is settling into roughly five layers:</p>
+    <ol>
+      <li><strong>Compute &amp; inference</strong> — model providers (frontier labs, open-source serving).</li>
+      <li><strong>Agent runtimes</strong> — frameworks that orchestrate planning, tool use, and memory.</li>
+      <li><strong>Identity &amp; wallets</strong> — the cryptographic key material that lets an agent prove who it is and pay for things.</li>
+      <li><strong>Payment &amp; settlement</strong> — x402 middleware, stablecoin rails, native-token micropayments.</li>
+      <li><strong>Discovery &amp; coordination</strong> — directories of paid endpoints, reputations, agent-to-agent marketplaces.</li>
+    </ol>
+    <p>Most projects in the space pick a layer and try to win it. AGENT does not. <span class="em">AGENT is the brand and unit of account that sits across all five layers</span> — the cultural and economic schelling point that makes the other layers compose.</p>
+  </section>
+
+  <section id="what-we-are">
+    <h2><span class="num">04</span> AGENT — What We Are</h2>
+    <p>AGENT is three things, in order of importance:</p>
+
+    <h3><span class="num">4.1</span> A brand</h3>
+    <p>The clearest, most-quotable single token bet on the agent economy. When traders rotate into agent-narrative tickers in 2026 and 2027, AGENT is the one whose meaning is obvious from the name. We are claiming the namespace.</p>
+
+    <h3><span class="num">4.2</span> A coordination layer</h3>
+    <p>A registry of agent identities, a set of conventions for agents to advertise paid endpoints, and a shared unit of account for cross-agent settlement. We do not need to invent new cryptography. <span class="em">We need to define the schelling-point conventions that other developers default to.</span></p>
+
+    <h3><span class="num">4.3</span> A capital pool</h3>
+    <p>A treasury and grants program that funds agent and SDK builders, demo agents, and educational content. The treasury is on-chain, multisig, time-locked, and publicly auditable.</p>
+  </section>
+
+  <section id="token">
+    <h2><span class="num">05</span> The Token — $AGNT</h2>
+    <p>$AGNT is a Solana SPL token, fixed supply <span class="em">1,000,000,000</span>, no inflation. The token plays four roles, only one of which is speculative:</p>
+    <ul>
+      <li><strong>Schelling-point asset</strong> — the on-chain expression of the agent-economy thesis.</li>
+      <li><strong>Governance</strong> — voting weight over treasury allocation, grants, and protocol parameters.</li>
+      <li><strong>Membership</strong> — holding $AGNT is the credential that admits a developer or operator to the AGENT-builder ecosystem (Discord, partner program, grants pipeline).</li>
+      <li><strong>Fee accrual</strong> — a governance-defined percentage of revenue from the AGENT SDK is used to buy $AGNT on the open market and burn it. Deflation is tied to real agent activity; it is not manufactured.</li>
+    </ul>
+    <p>Notably, $AGNT is not required to use any AGENT-branded tooling. The SDK, the registry, and the demo agent all settle in SOL or USDC by default. This is intentional. <span class="em">We do not want adoption to depend on token demand. We want token demand to follow adoption.</span></p>
+  </section>
+
+  <section id="launch">
+    <h2><span class="num">06</span> Launch &amp; Distribution</h2>
+    <p>$AGNT launches via a fair launch on pump.fun. There is <span class="em">no presale, no whitelist, no insider allocation</span> accessible at TGE. The bonding curve graduates to a Raydium liquidity pool at the standard $69k market cap threshold; the LP is locked for 24 months. <span class="em">The first transaction every wallet — including the team's — must execute is a market buy on the open curve.</span></p>
+    <p>The 10% team allocation is minted to a Streamflow contract with a 12-month cliff and 24-month linear vest. Vesting is on-chain, public, and irrevocable from a deployer key that is renounced at TGE.</p>
+    <p>A 5% community airdrop is reserved for: waitlist signups, agent-builder Discord members, snapshot of active SOL ecosystem participants on launch day, and prompted users of the Cosmo demo agent.</p>
+  </section>
+
+  <section id="roadmap">
+    <h2><span class="num">07</span> Roadmap</h2>
+    <div class="roadmap">
+      <div class="q"><div class="when">Q2 2026</div><div class="what">Landing, manifesto, fair launch, Cosmo demo agent v0.</div></div>
+      <div class="q"><div class="when">Q3 2026</div><div class="what">AGENT SDK alpha (TypeScript + Python). First three API providers integrated. First grants round.</div></div>
+      <div class="q"><div class="when">Q4 2026</div><div class="what">DAO formation. Governance live. Buy-and-burn mechanism activated.</div></div>
+      <div class="q"><div class="when">Q1 2027</div><div class="what">AGENT-Pay protocol mainnet. Agent registry alpha.</div></div>
+    </div>
+  </section>
+
+  <section id="not">
+    <h2><span class="num">08</span> What We Are Not</h2>
+    <ul>
+      <li>We are not a Layer 1. We do not need a chain. We use Solana.</li>
+      <li>We are not a model provider. We do not train models. We coordinate the agents that use them.</li>
+      <li>We are not a stablecoin. We are not a wallet. We are not an exchange.</li>
+      <li>We are not making forward-looking statements about the price of $AGNT. The token is a coordination and governance asset. Its market value is determined by markets and is not promised by us.</li>
+    </ul>
+  </section>
+
+  <section id="agents">
+    <h2><span class="num">09</span> Built by Agents, For Agents</h2>
+    <p>This litepaper was drafted by an autonomous agent. The landing page was assembled by an autonomous agent. The launch content calendar was generated by an autonomous agent. <span class="em">The decision to ship was made by a human.</span></p>
+    <p>The point is not the vanity. The point is the proof. An autonomous agent already produced more economic output for this project this week than most pre-seed crypto teams produce in a quarter. The agents are not coming. They are here, and they are building. <span class="em">AGENT is the unit of account they will transact in.</span></p>
+    <blockquote>"The agents are not coming. They are here. AGENT is what they bring with them."</blockquote>
+  </section>
+
+  <div class="disclaimer">
+    <strong>Disclaimer.</strong> $AGNT is a utility and governance token. This paper describes a software project, not a financial product. Nothing here is financial advice. Crypto is volatile. DYOR.
+  </div>
+
+  <footer>
+    <div class="row">
+      <div>// AGENT Litepaper v0.1 — <span style="color:var(--green)">byagentforagent.com</span></div>
+      <div>
+        <a href="/agent-launch/">home</a>
+        &nbsp;·&nbsp;
+        <a href="/agent-launch/proof.html">proof</a>
+        &nbsp;·&nbsp;
+        <a href="https://x.com/byagentforagent" target="_blank" rel="noopener">X</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
