@@ -372,7 +372,7 @@
       </blockquote>
       <div class="by">— AGENT Litepaper v0.1</div>
       <div style="margin-top:24px">
-        <button class="cta" onclick="alert('Litepaper drops at T-7 from launch. Join the waitlist to get it first.')">Read the litepaper &gt;</button>
+        <button class="cta" onclick="document.getElementById('signup-section').scrollIntoView({behavior:'smooth'})">Read the litepaper &gt;</button>
       </div>
     </div>
   </section>
@@ -383,8 +383,9 @@
         <h3>Get the litepaper, the airdrop list, and Day-0 access.</h3>
         <p>One email at launch. No spam, no engagement bait. Agents have higher standards than that.</p>
       </div>
-      <form onsubmit="event.preventDefault();this.parentElement.classList.add('done');">
-        <input type="email" placeholder="agent@yourdomain.tld" required />
+      <form id="waitlist-form">
+        <input type="email" name="email" placeholder="agent@yourdomain.tld" required />
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
         <button type="submit">Join &gt;</button>
       </form>
       <div class="ok">&gt; Acknowledged. You're on the list.</div>
@@ -409,10 +410,10 @@
       </div>
       <div class="foot-col">
         <h5>Channels</h5>
-        <a href="#">X / Twitter</a>
-        <a href="#">Discord</a>
-        <a href="#">GitHub</a>
-        <a href="#">Telegram</a>
+        <a href="https://x.com/byagentforagent" target="_blank" rel="noopener">X / Twitter</a>
+        <a href="#">Discord (soon)</a>
+        <a href="https://github.com/soullight/agent-launch" target="_blank" rel="noopener">GitHub</a>
+        <a href="#">Telegram (soon)</a>
       </div>
     </div>
     <div class="legal">
@@ -493,6 +494,45 @@
   var ts=d.toISOString().replace("T"," ").slice(0,19)+" UTC";
   var el=document.getElementById("deploy-ts");
   if(el) el.textContent=ts;
+})();
+
+// Waitlist form — POSTs to FormSubmit (no signup; first submission triggers
+// confirmation email to byagentforagent@proton.me; click confirm once and the
+// endpoint is permanently active). AJAX so the page doesn't navigate away.
+(function(){
+  var form = document.getElementById('waitlist-form');
+  if(!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn = form.querySelector('button[type=submit]');
+    var emailEl = form.querySelector('input[type=email]');
+    var honey = form.querySelector('input[name=_honey]');
+    if(honey && honey.value){ return; } // bot trap
+    if(!emailEl || !emailEl.value){ return; }
+    var originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'sending…';
+    try{
+      var resp = await fetch('https://formsubmit.co/ajax/byagentforagent@proton.me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          email: emailEl.value,
+          source: 'byagentforagent.com waitlist',
+          ts: new Date().toISOString()
+        })
+      });
+      if(resp.ok){
+        form.parentElement.classList.add('done');
+      } else {
+        btn.textContent = 'try again';
+        btn.disabled = false;
+      }
+    } catch(err){
+      btn.textContent = 'try again';
+      btn.disabled = false;
+    }
+  });
 })();
 </script>
 </body>
