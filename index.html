@@ -497,21 +497,27 @@
 })();
 
 /* =========================================================================
-   WAITLIST EMAIL CAPTURE
-   See EMAIL_FIX.md in the project folder for the 60-second activation.
+   WAITLIST EMAIL CAPTURE — MULTI-DESTINATION FAN-OUT
 
-   Provider options (set SIGNUP.provider below):
-     "discord"     — RECOMMENDED. Paste a Discord webhook URL into discord_webhook.
-                     Every signup arrives as a message in your Discord channel.
-                     No accounts, no confirmation emails, no API keys. Just works.
-     "appsscript"  — Google Apps Script writing to a Google Sheet (real list).
-     "web3forms"   — web3forms.com. Paste access key into web3forms_key.
-     "formsubmit"  — LEGACY. Requires confirmation-email click on first submission;
-                     unreliable in practice — keep as fallback only.
-     "custom"      — any endpoint accepting JSON {email, source, ts, ref}.
+   Every submission is fired in parallel to ALL configured destinations.
+   Set the URL/key for any destination and it will receive every signup;
+   leave it empty and it's skipped. Configure as many as you want.
 
-   Every submission ALSO writes to localStorage as a backup. To inspect:
-     visit the page with ?admin=1  (renders a panel + console.table dump)
+   Active destinations:
+     discord_webhook  — Discord webhook URL. Real-time channel notifications.
+     appsscript_url   — Google Apps Script Web App /exec URL. Real list in a Sheet.
+     web3forms_key    — web3forms.com access key. Email forwarding service.
+     custom_url       — any endpoint accepting JSON {email, source, ts, ref, utm}.
+
+   Legacy / opt-in:
+     formsubmit_to    — only fires if SIGNUP.provider === 'formsubmit'. Unreliable
+                        (requires confirmation-email click on first submission).
+
+   localStorage backup is ALWAYS written, regardless of network success/failure.
+   Visit the page with ?admin=1 to see captured backups.
+
+   See SHEETS_SETUP.md for the 5-minute Google Sheet setup.
+   See EMAIL_FIX.md for the original Discord-webhook setup.
    ========================================================================= */
 var SIGNUP = {
   provider:         "discord",                       // active provider
@@ -595,12 +601,18 @@ var SIGNUP = {
 
   async function postAppsScript(payload){
     if(!SIGNUP.appsscript_url) throw new Error('appsscript_url not configured');
-    return fetch(SIGNUP.appsscript_url, {
+    // Apps Script Web Apps redirect through googleusercontent.com without CORS
+    // headers, which makes the response unreadable in default cors mode (even
+    // though the POST itself succeeds and the sheet write happens). Use no-cors:
+    // fire-and-forget. We can't read the confirmation, but the data lands.
+    await fetch(SIGNUP.appsscript_url, {
       method: 'POST',
-      // Apps Script doesn't echo CORS headers reliably; use text/plain to dodge preflight
+      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
     });
+    // Synthetic ok — opaque no-cors responses always have ok=false otherwise.
+    return { ok: true, _opaque: true };
   }
 
   async function postWeb3Forms(payload){
@@ -623,14 +635,42 @@ var SIGNUP = {
   }
 
   async function dispatch(payload){
-    switch(SIGNUP.provider){
-      case 'discord':    return postDiscord(payload);
-      case 'appsscript': return postAppsScript(payload);
-      case 'web3forms':  return postWeb3Forms(payload);
-      case 'custom':     return postCustom(payload);
-      case 'formsubmit': return postFormSubmit(payload);
-      default:           return postDiscord(payload);
+    // Multi-destination fan-out. Fire every configured destination in parallel.
+    // localStorage backup already happened upstream of this call.
+    var tasks = [];
+    if (SIGNUP.discord_webhook)                  tasks.push(['discord',    postDiscord(payload)]);
+    if (SIGNUP.appsscript_url)                   tasks.push(['appsscript', postAppsScript(payload)]);
+    if (SIGNUP.web3forms_key)                    tasks.push(['web3forms',  postWeb3Forms(payload)]);
+    if (SIGNUP.custom_url)                       tasks.push(['custom',     postCustom(payload)]);
+    if (SIGNUP.provider === 'formsubmit'
+        && SIGNUP.formsubmit_to)                 tasks.push(['formsubmit', postFormSubmit(payload)]);
+
+    if (tasks.length === 0) {
+      console.warn('[AGENT signup] no destinations configured — captured to localStorage only');
+      return { ok: true, _synthetic: true };
     }
+
+    var results = await Promise.allSettled(
+      tasks.map(function(t){
+        return t[1].then(
+          function(r){ return { name: t[0], ok: !!(r && r.ok), status: r && r.status }; },
+          function(e){ return { name: t[0], ok: false, error: e && e.message }; }
+        );
+      })
+    );
+
+    var summary = results.map(function(r){ return r.value; });
+    var oks = summary.filter(function(s){ return s.ok; }).length;
+    var fails = summary.length - oks;
+
+    if (fails > 0) {
+      console.warn('[AGENT signup] ' + oks + '/' + summary.length + ' destinations succeeded; ' + fails + ' failed', summary);
+    } else {
+      console.log('[AGENT signup] ' + oks + '/' + summary.length + ' destinations ok', summary);
+    }
+
+    // Aggregate "ok" if at least one destination accepted the payload.
+    return { ok: oks > 0, _multi: true, summary: summary };
   }
 
   form.addEventListener('submit', async function(e){
