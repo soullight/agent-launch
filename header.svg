@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 500" width="1500" height="500" font-family="ui-monospace, 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, Consolas, monospace">
+  <defs>
+    <radialGradient id="glow" cx="78%" cy="22%" r="55%">
+      <stop offset="0%" stop-color="#5cf08c" stop-opacity="0.20"/>
+      <stop offset="60%" stop-color="#5cf08c" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#5cf08c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="amberGlow" cx="12%" cy="78%" r="55%">
+      <stop offset="0%" stop-color="#ffb347" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#ffb347" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="scan" x="0" y="0" width="3" height="3" patternUnits="userSpaceOnUse">
+      <rect width="3" height="1" fill="#ffffff" fill-opacity="0.018"/>
+    </pattern>
+    <filter id="textGlow" x="-10%" y="-50%" width="120%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base black -->
+  <rect width="1500" height="500" fill="#070907"/>
+  <!-- Glows -->
+  <rect width="1500" height="500" fill="url(#glow)"/>
+  <rect width="1500" height="500" fill="url(#amberGlow)"/>
+
+  <!-- Top ticker bar -->
+  <line x1="60" y1="56" x2="1440" y2="56" stroke="#1a221a" stroke-width="1"/>
+  <text x="60" y="42" fill="#5cf08c" font-size="13" letter-spacing="3" opacity="0.95">// AGENT</text>
+  <text x="170" y="42" fill="#7a8b75" font-size="13" letter-spacing="3">$AGNT</text>
+  <text x="270" y="42" fill="#7a8b75" font-size="13" letter-spacing="3">SOLANA</text>
+  <text x="395" y="42" fill="#7a8b75" font-size="13" letter-spacing="3">PRE-LAUNCH</text>
+  <text x="1440" y="42" fill="#7a8b75" font-size="13" letter-spacing="3" text-anchor="end">BUILT BY AGENTS · FOR AGENTS</text>
+
+  <!-- Hero terminal text -->
+  <g filter="url(#textGlow)">
+    <text x="60" y="280" fill="#5cf08c" font-size="92" font-weight="700" letter-spacing="-1">&gt; agents are coming.</text>
+  </g>
+  <!-- Cursor block -->
+  <rect x="1080" y="226" width="36" height="68" fill="#5cf08c" opacity="0.95"/>
+
+  <!-- Sub-line -->
+  <text x="60" y="340" fill="#d8e8d0" font-size="22" letter-spacing="1">the unit of account for the agent economy.</text>
+
+  <!-- Bottom prompt -->
+  <text x="60" y="430" fill="#7a8b75" font-size="14" letter-spacing="2">~/agent</text>
+  <text x="180" y="430" fill="#5cf08c" font-size="14" letter-spacing="2">$ ./join.sh</text>
+  <text x="350" y="430" fill="#7a8b75" font-size="14" letter-spacing="2">→ agent.fund</text>
+
+  <!-- Right column status block -->
+  <g transform="translate(1080, 360)">
+    <rect width="360" height="100" fill="#0a0e0a" stroke="#1a221a" stroke-width="1"/>
+    <text x="14" y="22" fill="#7a8b75" font-size="11" letter-spacing="2">STATUS</text>
+    <text x="14" y="46" fill="#5cf08c" font-size="14" letter-spacing="1">● mainnet · pre-launch</text>
+    <text x="14" y="68" fill="#ffb347" font-size="14" letter-spacing="1">◐ litepaper · drafting</text>
+    <text x="14" y="90" fill="#5cf08c" font-size="14" letter-spacing="1">● cosmo · online</text>
+  </g>
+
+  <!-- Scanlines overlay -->
+  <rect width="1500" height="500" fill="url(#scan)"/>
+</svg>

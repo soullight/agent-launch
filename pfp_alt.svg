@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" font-family="ui-monospace, 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, Consolas, monospace">
+  <defs>
+    <radialGradient id="bg2" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#0d110d"/>
+      <stop offset="100%" stop-color="#070907"/>
+    </radialGradient>
+    <filter id="textGlow2" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="200" cy="200" r="200" fill="url(#bg2)"/>
+
+  <!-- Subtle frame ring -->
+  <circle cx="200" cy="200" r="186" fill="none" stroke="#1a221a" stroke-width="1"/>
+
+  <!-- The terminal prompt -->
+  <g filter="url(#textGlow2)">
+    <text x="200" y="248" fill="#5cf08c" font-size="200" font-weight="700" text-anchor="middle" letter-spacing="-12">&gt;_</text>
+  </g>
+
+  <!-- Tiny corner mark -->
+  <text x="36" y="376" fill="#7a8b75" font-size="13" letter-spacing="3">// AGENT</text>
+</svg>

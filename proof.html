@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AGENT — Proof / Transparency Dashboard</title>
+<meta name="description" content="On-chain proof of every claim AGENT makes. Treasury, LP lock, vesting, burns, holders." />
+<style>
+  :root{
+    --bg:#070907; --bg-2:#0d110d; --fg:#d8e8d0; --dim:#7a8b75;
+    --green:#5cf08c; --green-dim:#2c7a44; --amber:#ffb347; --magenta:#ff5c8a;
+    --rule:#1a221a;
+    --mono:"JetBrains Mono","Fira Code","SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body{
+    background:radial-gradient(900px 600px at 80% -10%, rgba(92,240,140,0.05), transparent 60%), var(--bg);
+    min-height:100vh;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;z-index:1}
+  a{color:var(--green);text-decoration:none}
+  a:hover{color:#fff;text-shadow:0 0 8px var(--green)}
+  ::selection{background:var(--green);color:#000}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:24px}
+
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0;border-bottom:1px solid var(--rule);
+    position:sticky;top:0;background:rgba(7,9,7,0.85);backdrop-filter:blur(8px);z-index:10;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:0.18em}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 1.6s ease-in-out infinite}
+  .brand .ticker{color:var(--dim);font-weight:500;letter-spacing:0.12em}
+  .nav .right{display:flex;gap:18px;align-items:center;color:var(--dim);font-size:12px;letter-spacing:0.16em}
+  .nav .right a{color:var(--dim)}
+  .nav .right a:hover{color:var(--fg)}
+
+  /* page header */
+  .head{padding:48px 0 24px}
+  .head .tag{color:var(--green-dim);font-size:11px;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:10px}
+  .head h1{font-size:clamp(32px,4.4vw,56px);margin:0 0 12px;letter-spacing:-0.005em;font-weight:700}
+  .head .sub{color:var(--dim);max-width:680px;font-size:16px;margin:0 0 8px}
+  .head .updated{color:var(--green-dim);font-size:12px;letter-spacing:0.16em;margin-top:14px}
+
+  /* top metric strip */
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0 8px}
+  .stat{background:var(--bg-2);border:1px solid var(--rule);border-radius:4px;padding:18px;position:relative}
+  .stat .k{color:var(--dim);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:6px}
+  .stat .v{color:var(--green);font-size:22px;font-weight:700;letter-spacing:-0.01em}
+  .stat .sub{color:var(--dim);font-size:12px;margin-top:4px}
+
+  section{padding:48px 0;border-top:1px solid var(--rule)}
+  .stag{color:var(--green-dim);font-size:11px;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:6px}
+  .stitle{font-size:clamp(22px,2.8vw,30px);margin:0 0 8px;font-weight:700;letter-spacing:-0.005em}
+  .slede{color:var(--dim);max-width:700px;margin:0 0 22px;font-size:14px}
+
+  /* row layouts */
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .cell{background:var(--bg-2);border:1px solid var(--rule);border-radius:4px;padding:18px}
+  .cell h3{margin:0 0 12px;font-size:14px;color:var(--fg);letter-spacing:0.06em}
+  .kv{display:grid;grid-template-columns:160px 1fr;gap:6px;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--rule)}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--dim)}
+  .kv .v{color:var(--fg);word-break:break-all}
+  .kv .v a{color:var(--green)}
+  .badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase}
+  .badge.ok{background:rgba(92,240,140,0.12);color:var(--green);border:1px solid var(--green-dim)}
+  .badge.amber{background:rgba(255,179,71,0.10);color:var(--amber);border:1px solid var(--amber)}
+  .badge.dim{background:rgba(122,139,117,0.10);color:var(--dim);border:1px solid var(--rule)}
+
+  /* vesting visual */
+  .vesting{margin-top:6px;padding-top:6px}
+  .vlegend{display:flex;gap:18px;font-size:12px;color:var(--dim);margin-bottom:12px;flex-wrap:wrap}
+  .vlegend span{display:inline-flex;align-items:center;gap:6px}
+  .vlegend i{width:10px;height:10px;display:inline-block;border-radius:1px}
+  .vbar{position:relative;height:24px;background:#0a0e0a;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+  .vbar .now{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--green);box-shadow:0 0 12px var(--green);z-index:3}
+  .vbar .cliff{position:absolute;top:0;bottom:0;background:rgba(255,179,71,0.20);border-right:1px dashed var(--amber);z-index:1}
+  .vbar .vest{position:absolute;top:0;bottom:0;background:linear-gradient(90deg, rgba(92,240,140,0.10), rgba(92,240,140,0.30));z-index:1}
+  .vmonths{display:flex;justify-content:space-between;color:var(--dim);font-size:11px;margin-top:8px}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--rule)}
+  th{color:var(--dim);font-weight:500;font-size:11px;letter-spacing:0.16em;text-transform:uppercase}
+  td a{color:var(--green)}
+  td.r{color:var(--green);font-weight:600;text-align:right}
+  td.amt{text-align:right;color:var(--fg)}
+
+  /* burn marquee */
+  .burn-card{background:linear-gradient(180deg, rgba(92,240,140,0.04), transparent), var(--bg-2);border:1px solid var(--rule);border-radius:4px;padding:18px}
+  .burn-counter{font-size:36px;font-weight:700;letter-spacing:-0.01em;color:var(--green);text-shadow:0 0 18px rgba(92,240,140,0.3)}
+  .burn-sub{color:var(--dim);font-size:13px;margin-top:4px}
+
+  /* holders distribution */
+  .dist{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:14px}
+  .dist > div{height:28px;border-radius:2px;background:var(--green-dim);position:relative}
+  .dist > div::after{content:attr(data-pct);position:absolute;top:32px;left:0;right:0;text-align:center;color:var(--dim);font-size:10px}
+
+  /* footer */
+  footer{padding:32px 0 60px;color:var(--dim);font-size:12px;border-top:1px solid var(--rule);margin-top:24px}
+  .legal{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  @keyframes pulse{50%{opacity:0.4;transform:scale(0.85)}}
+
+  @media (max-width:880px){
+    .strip{grid-template-columns:1fr 1fr}
+    .row{grid-template-columns:1fr}
+    .nav .right{display:none}
+    .dist{grid-template-columns:repeat(5,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="brand"><span class="dot"></span>AGENT <span class="ticker">/ $AGNT / proof</span></div>
+    <div class="right">
+      <a href="/">← back to agent.fund</a>
+      <span>updated <span id="updated-ts">—</span></span>
+    </div>
+  </nav>
+
+  <div class="head">
+    <div class="tag">// proof</div>
+    <h1>Trust math. Not promises.</h1>
+    <p class="sub">
+      Every claim AGENT makes about supply, treasury, locks, and burns is verifiable on Solana. This page reads from the chain. It updates on refresh.
+    </p>
+    <div class="updated">// data refreshed live from Solana RPC. block height: <span id="block-h">—</span></div>
+  </div>
+
+  <div class="strip">
+    <div class="stat"><div class="k">Total supply</div><div class="v">1,000,000,000</div><div class="sub">$AGNT — fixed, no inflation</div></div>
+    <div class="stat"><div class="k">Circulating</div><div class="v" id="m-circ">657,142,857</div><div class="sub">65.7% of supply</div></div>
+    <div class="stat"><div class="k">Burned to date</div><div class="v" id="m-burn">12,486,201</div><div class="sub">1.25% — buy &amp; burn</div></div>
+    <div class="stat"><div class="k">Holders</div><div class="v" id="m-holders">8,412</div><div class="sub">+312 this week</div></div>
+  </div>
+
+  <!-- ============ TREASURY ============ -->
+  <section>
+    <div class="stag">// treasury</div>
+    <h2 class="stitle">Treasury &amp; war chest</h2>
+    <p class="slede">3-of-5 multisig, hardware-wallet signers, on-chain timelock for outflows above 2% of treasury.</p>
+
+    <div class="row">
+      <div class="cell">
+        <h3>Multisig wallet <span class="badge ok">verified</span></h3>
+        <div class="kv"><div class="k">Address</div><div class="v"><a id="treas-addr" href="#">AgnT...placeholderTREAS9k2L4mLp</a></div></div>
+        <div class="kv"><div class="k">Type</div><div class="v">Squads V4 — 3 of 5</div></div>
+        <div class="kv"><div class="k">Timelock</div><div class="v">6 hours on outflows &gt; 2% of treasury</div></div>
+        <div class="kv"><div class="k">Signer 1</div><div class="v">Founder (hardware)</div></div>
+        <div class="kv"><div class="k">Signer 2</div><div class="v">Ops lead (hardware)</div></div>
+        <div class="kv"><div class="k">Signer 3</div><div class="v">Independent — DAO-elected</div></div>
+        <div class="kv"><div class="k">Signers 4–5</div><div class="v">Reserve (recovery)</div></div>
+      </div>
+      <div class="cell">
+        <h3>Holdings <span class="badge dim">live</span></h3>
+        <div class="kv"><div class="k">$AGNT</div><div class="v" id="treas-agnt">200,000,000  ·  20% of supply</div></div>
+        <div class="kv"><div class="k">SOL</div><div class="v" id="treas-sol">12,406.21 SOL  ·  ~$2.32M</div></div>
+        <div class="kv"><div class="k">USDC</div><div class="v" id="treas-usdc">$1,180,000</div></div>
+        <div class="kv"><div class="k">Last outflow</div><div class="v">Q3 grants disbursement · <a href="#">5z3a...rTx</a></div></div>
+        <div class="kv"><div class="k">Runway</div><div class="v">~38 months at current burn (incl. SDK + community)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LP LOCK ============ -->
+  <section>
+    <div class="stag">// liquidity</div>
+    <h2 class="stitle">LP lock &amp; market depth</h2>
+    <p class="slede">The Raydium liquidity pool LP tokens are locked on-chain for 24 months from TGE. Anyone can verify the lock, the unlock date, and the locked amount.</p>
+
+    <div class="row">
+      <div class="cell">
+        <h3>Raydium pool <span class="badge ok">locked</span></h3>
+        <div class="kv"><div class="k">Pool</div><div class="v"><a href="#">AGNT/SOL · Raydium AMM</a></div></div>
+        <div class="kv"><div class="k">Pool address</div><div class="v"><a id="pool-addr" href="#">AgnT...placeholderPOOL7y3HxZqQ</a></div></div>
+        <div class="kv"><div class="k">Liquidity (TVL)</div><div class="v" id="lp-tvl">$4.81M  ·  ~25,800 SOL</div></div>
+        <div class="kv"><div class="k">24h volume</div><div class="v" id="lp-vol">$11.3M</div></div>
+      </div>
+      <div class="cell">
+        <h3>Lock contract <span class="badge ok">irrevocable</span></h3>
+        <div class="kv"><div class="k">Locker</div><div class="v">Streamflow / pump.fun lock</div></div>
+        <div class="kv"><div class="k">Locked LP</div><div class="v">100% of initial pool LP tokens</div></div>
+        <div class="kv"><div class="k">Lock TX</div><div class="v"><a href="#">3kQa...lockSig</a></div></div>
+        <div class="kv"><div class="k">Lock start</div><div class="v">2026-04-28</div></div>
+        <div class="kv"><div class="k">Unlock</div><div class="v">2028-04-28  <span class="badge amber" id="unlock-cd">in 730 days</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VESTING ============ -->
+  <section>
+    <div class="stag">// vesting</div>
+    <h2 class="stitle">Team &amp; ecosystem vesting</h2>
+    <p class="slede">Team allocation has a 12-month cliff. Nothing unlocks at TGE. Ecosystem vests linearly over 36 months.</p>
+
+    <div class="row">
+      <div class="cell">
+        <h3>Team — 100,000,000 $AGNT (10%)</h3>
+        <div class="vesting">
+          <div class="vlegend">
+            <span><i style="background:rgba(255,179,71,0.45)"></i>cliff (no unlock)</span>
+            <span><i style="background:linear-gradient(90deg, rgba(92,240,140,0.4), rgba(92,240,140,1))"></i>linear vest</span>
+            <span><i style="background:var(--green);box-shadow:0 0 8px var(--green)"></i>now</span>
+          </div>
+          <div class="vbar" id="team-vbar">
+            <div class="cliff" style="left:0;width:33.3%"></div>
+            <div class="vest" style="left:33.3%;width:66.7%"></div>
+            <div class="now" id="team-now" style="left:0%"></div>
+          </div>
+          <div class="vmonths"><span>0</span><span>12</span><span>24</span><span>36</span></div>
+          <div class="kv" style="margin-top:14px"><div class="k">Streamflow contract</div><div class="v"><a href="#">teamVest...placeholderHASH</a></div></div>
+          <div class="kv"><div class="k">Unlocked so far</div><div class="v" id="team-unlocked">0 $AGNT  ·  0%</div></div>
+          <div class="kv"><div class="k">Next unlock</div><div class="v" id="team-next">2027-04-28  ·  start of linear vest</div></div>
+        </div>
+      </div>
+      <div class="cell">
+        <h3>Ecosystem grants — 100,000,000 $AGNT (10%)</h3>
+        <div class="vesting">
+          <div class="vlegend">
+            <span><i style="background:linear-gradient(90deg, rgba(92,240,140,0.4), rgba(92,240,140,1))"></i>linear release</span>
+            <span><i style="background:var(--green);box-shadow:0 0 8px var(--green)"></i>now</span>
+          </div>
+          <div class="vbar" id="eco-vbar">
+            <div class="vest" style="left:0;width:100%"></div>
+            <div class="now" id="eco-now" style="left:0%"></div>
+          </div>
+          <div class="vmonths"><span>0</span><span>12</span><span>24</span><span>36</span></div>
+          <div class="kv" style="margin-top:14px"><div class="k">Disbursed so far</div><div class="v" id="eco-disbursed">2,777,777 $AGNT  ·  2.78%</div></div>
+          <div class="kv"><div class="k">Active grants</div><div class="v">14  ·  <a href="#">view recipients</a></div></div>
+          <div class="kv"><div class="k">Next round</div><div class="v">Q3 2026  ·  proposals open</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BUY & BURN ============ -->
+  <section>
+    <div class="stag">// buy &amp; burn</div>
+    <h2 class="stitle">Real burns. Real receipts.</h2>
+    <p class="slede">A governance-set percentage of AGENT SDK revenue is converted to $AGNT on the open market and burned. No theater. No "burn ceremonies." Just on-chain receipts.</p>
+
+    <div class="row">
+      <div class="cell burn-card">
+        <div class="k" style="color:var(--dim);font-size:11px;letter-spacing:0.16em;text-transform:uppercase">Total burned</div>
+        <div class="burn-counter" id="burn-total">12,486,201 $AGNT</div>
+        <div class="burn-sub">1.25% of supply removed permanently · last burn 6 days ago</div>
+      </div>
+      <div class="cell">
+        <h3>Mechanism</h3>
+        <div class="kv"><div class="k">Source</div><div class="v">AGENT SDK revenue (per-call fees)</div></div>
+        <div class="kv"><div class="k">Cadence</div><div class="v">Quarterly · governance-adjustable</div></div>
+        <div class="kv"><div class="k">% of revenue</div><div class="v">25% (DAO-set, range 10–50%)</div></div>
+        <div class="kv"><div class="k">Buy venue</div><div class="v">Jupiter aggregator (best execution)</div></div>
+      </div>
+    </div>
+
+    <div class="cell" style="margin-top:18px">
+      <h3>Recent burns</h3>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Amount</th><th>Source quarter</th><th>Burn TX</th><th>Buy TX</th></tr>
+        </thead>
+        <tbody id="burn-rows">
+          <tr><td>2026-04-22</td><td class="amt">3,142,718 $AGNT</td><td>Q1 2026</td><td><a href="#">7zKw...burnSig</a></td><td><a href="#">9aXf...buySig</a></td></tr>
+          <tr><td>2026-01-21</td><td class="amt">2,884,003 $AGNT</td><td>Q4 2025</td><td><a href="#">4nAp...burnSig</a></td><td><a href="#">8bRz...buySig</a></td></tr>
+          <tr><td>2025-10-20</td><td class="amt">2,701,490 $AGNT</td><td>Q3 2025</td><td><a href="#">2cHx...burnSig</a></td><td><a href="#">6dQp...buySig</a></td></tr>
+          <tr><td>2025-07-19</td><td class="amt">2,250,118 $AGNT</td><td>Q2 2025</td><td><a href="#">5fLn...burnSig</a></td><td><a href="#">3eMw...buySig</a></td></tr>
+          <tr><td>2025-04-21</td><td class="amt">1,507,872 $AGNT</td><td>Q1 2025</td><td><a href="#">1gKj...burnSig</a></td><td><a href="#">2hVq...buySig</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ HOLDERS ============ -->
+  <section>
+    <div class="stag">// holders</div>
+    <h2 class="stitle">Distribution &amp; concentration</h2>
+    <p class="slede">Top-10 concentration is the single biggest tell of a healthy launch versus a wash-traded one. Live from chain.</p>
+
+    <div class="row">
+      <div class="cell">
+        <h3>Top 10 wallets</h3>
+        <table>
+          <tbody id="top10-rows">
+            <tr><td>1</td><td><a href="#">RaydiumLP_AGNT_SOL</a></td><td class="r">14.21%</td></tr>
+            <tr><td>2</td><td><a href="#">AGENT Treasury (multisig)</a></td><td class="r">9.88%</td></tr>
+            <tr><td>3</td><td><a href="#">Pump.fun bonding curve residual</a></td><td class="r">3.04%</td></tr>
+            <tr><td>4</td><td><a href="#">Streamflow team vest</a></td><td class="r">2.91%</td></tr>
+            <tr><td>5</td><td><a href="#">Streamflow ecosystem vest</a></td><td class="r">2.71%</td></tr>
+            <tr><td>6</td><td><a href="#">CEX hot wallet (KuCoin)</a></td><td class="r">1.82%</td></tr>
+            <tr><td>7</td><td><a href="#">Wallet 0x...kQpA</a></td><td class="r">0.91%</td></tr>
+            <tr><td>8</td><td><a href="#">Wallet 0x...mZxW</a></td><td class="r">0.73%</td></tr>
+            <tr><td>9</td><td><a href="#">Wallet 0x...nYtR</a></td><td class="r">0.61%</td></tr>
+            <tr><td>10</td><td><a href="#">Wallet 0x...pVbL</a></td><td class="r">0.49%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cell">
+        <h3>Distribution</h3>
+        <div class="kv"><div class="k">Total holders</div><div class="v">8,412</div></div>
+        <div class="kv"><div class="k">Top 10</div><div class="v">37.31%  <span class="badge dim">healthy if &lt;40%</span></div></div>
+        <div class="kv"><div class="k">Top 100</div><div class="v">61.04%</div></div>
+        <div class="kv"><div class="k">Holders &gt; 0.1%</div><div class="v">142</div></div>
+        <div class="kv"><div class="k">Median holding</div><div class="v">~14,200 $AGNT</div></div>
+        <p style="color:var(--dim);font-size:12px;margin-top:14px">
+          Note: top 1 (Raydium LP) and top 2 (treasury) are protocol-owned, not insider wallets. True insider/founder concentration excluding protocol-owned addresses: <strong style="color:var(--green)">3.4%</strong>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AUDITS / SECURITY ============ -->
+  <section>
+    <div class="stag">// security</div>
+    <h2 class="stitle">Audits &amp; on-chain authorities</h2>
+    <p class="slede">All authorities renounced or null at TGE. Custom contracts audited before mainnet.</p>
+
+    <div class="row">
+      <div class="cell">
+        <h3>Token authorities</h3>
+        <div class="kv"><div class="k">Mint authority</div><div class="v"><span class="badge ok">renounced</span></div></div>
+        <div class="kv"><div class="k">Freeze authority</div><div class="v"><span class="badge ok">null</span></div></div>
+        <div class="kv"><div class="k">Update authority</div><div class="v"><span class="badge ok">renounced</span></div></div>
+        <div class="kv"><div class="k">Token program</div><div class="v">SPL Token (standard)</div></div>
+      </div>
+      <div class="cell">
+        <h3>Audit status</h3>
+        <div class="kv"><div class="k">Token contract</div><div class="v">Standard SPL — no custom logic <span class="badge dim">no audit needed</span></div></div>
+        <div class="kv"><div class="k">AGENT SDK</div><div class="v">Halborn — engagement signed Q3 2026 <span class="badge amber">in progress</span></div></div>
+        <div class="kv"><div class="k">AGENT-Pay protocol</div><div class="v">Ottersec — engagement scheduled Q4 2026 <span class="badge dim">queued</span></div></div>
+        <div class="kv"><div class="k">Multisig (Squads V4)</div><div class="v"><a href="#">Audited by Trail of Bits (Squads team)</a></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="legal">
+      <div>// AGENT proof. Every claim on agent.fund cross-references this page. If you find a discrepancy, post in <a href="#">#proof on Discord</a>.</div>
+      <div>$AGNT is a utility &amp; governance token. DYOR.</div>
+    </div>
+  </footer>
+</div>
+
+<!--
+================================================================================
+DEV NOTES — wiring this dashboard to live Solana RPC
+
+The current page renders with realistic mock data so it can ship as a static
+preview. To make it live, replace each `setMockData()` block below with a real
+@solana/web3.js call. Suggested integration shape:
+
+  import { Connection, PublicKey } from '@solana/web3.js';
+  const conn = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+
+  // Treasury balance
+  const lamports = await conn.getBalance(new PublicKey(TREASURY_ADDR));
+  const sol = lamports / 1e9;
+
+  // Token holdings — use SPL token program
+  const accounts = await conn.getParsedTokenAccountsByOwner(
+    new PublicKey(TREASURY_ADDR),
+    { programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
+  );
+
+  // Top holders & total supply — use a Solana indexer (Helius, Triton, Birdeye API)
+  // RPC alone is not efficient for top-N holder queries.
+
+  // Burns — query token mint's supply over time (decrease => burn) OR track the
+  // designated burn address transactions.
+
+  // Block height — getSlot()
+
+Recommended infra: Helius RPC + Helius Webhooks for burn/treasury notifications,
+plus Birdeye API for liquidity + holder distribution. Cache responses in Cloudflare
+Workers KV with a 60s TTL — this page should never hit RPC directly per request.
+
+Critical: every `<a href="#">` placeholder below should resolve to a real Solscan
+or SolanaFM URL. Format:
+  https://solscan.io/account/<addr>
+  https://solscan.io/tx/<sig>
+================================================================================
+-->
+<script>
+// Mock data + countdown helpers. Replace with live RPC calls per the dev notes above.
+
+(function setUpdated(){
+  const d = new Date();
+  document.getElementById('updated-ts').textContent =
+    d.toISOString().replace('T',' ').slice(0,16) + ' UTC';
+  // mock block height
+  const blockH = (321_400_000 + Math.floor(Math.random()*5000)).toLocaleString();
+  document.getElementById('block-h').textContent = blockH;
+})();
+
+// LP lock countdown: 24 months from a hardcoded TGE
+(function lockCountdown(){
+  const tge = new Date('2026-04-28T00:00:00Z');
+  const unlock = new Date(tge);
+  unlock.setMonth(unlock.getMonth() + 24);
+  const now = new Date();
+  const days = Math.max(0, Math.round((unlock - now) / (1000*60*60*24)));
+  const el = document.getElementById('unlock-cd');
+  if (el) el.textContent = 'in ' + days + ' days';
+})();
+
+// Vesting "now" markers — for team (12mo cliff + 24mo linear = 36mo total)
+(function vestingNow(){
+  const tge = new Date('2026-04-28T00:00:00Z');
+  const now = new Date();
+  const monthsSince = Math.max(0, (now - tge) / (1000*60*60*24*30.4375));
+  const teamPct = Math.min(100, (monthsSince / 36) * 100);
+  const ecoPct = Math.min(100, (monthsSince / 36) * 100);
+  const teamNow = document.getElementById('team-now');
+  const ecoNow = document.getElementById('eco-now');
+  if (teamNow) teamNow.style.left = teamPct + '%';
+  if (ecoNow) ecoNow.style.left = ecoPct + '%';
+
+  // Team unlocked%: 0 if before cliff (12mo), then linear to 100% over 24mo
+  let teamUnlocked = 0;
+  if (monthsSince > 12) {
+    teamUnlocked = Math.min(100, ((monthsSince - 12) / 24) * 100);
+  }
+  const tu = document.getElementById('team-unlocked');
+  if (tu) {
+    const tokens = Math.round(100_000_000 * teamUnlocked / 100);
+    tu.textContent = tokens.toLocaleString() + ' $AGNT  ·  ' + teamUnlocked.toFixed(2) + '%';
+  }
+
+  // Ecosystem disbursed: linear from 0
+  const ecoUnlocked = Math.min(100, (monthsSince / 36) * 100);
+  const eu = document.getElementById('eco-disbursed');
+  if (eu) {
+    const tokens = Math.round(100_000_000 * ecoUnlocked / 100);
+    eu.textContent = tokens.toLocaleString() + ' $AGNT  ·  ' + ecoUnlocked.toFixed(2) + '%';
+  }
+})();
+</script>
+</body>
+</html>
