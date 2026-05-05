@@ -137,182 +137,152 @@
 
   <div class="strip">
     <div class="stat"><div class="k">Total supply</div><div class="v">1,000,000,000</div><div class="sub">$AGNT — fixed, no inflation</div></div>
-    <div class="stat"><div class="k">Circulating</div><div class="v" id="m-circ">657,142,857</div><div class="sub">65.7% of supply</div></div>
-    <div class="stat"><div class="k">Burned to date</div><div class="v" id="m-burn">12,486,201</div><div class="sub">1.25% — buy &amp; burn</div></div>
-    <div class="stat"><div class="k">Holders</div><div class="v" id="m-holders">8,412</div><div class="sub">+312 this week</div></div>
+    <div class="stat"><div class="k">Curve-mintable</div><div class="v" id="m-circ">800,000,000</div><div class="sub">80% — issued only when SOL flows in</div></div>
+    <div class="stat"><div class="k">Treasury reserve</div><div class="v" id="m-burn">200,000,000</div><div class="sub">20% — held by agent, future LP only</div></div>
+    <div class="stat"><div class="k">Contributors</div><div class="v" id="m-holders">[live]</div><div class="sub">every $AGNT was paid for in SOL</div></div>
   </div>
 
   <!-- ============ TREASURY ============ -->
   <section>
     <div class="stag">// treasury</div>
     <h2 class="stitle">Treasury &amp; war chest</h2>
-    <p class="slede">3-of-5 multisig, hardware-wallet signers, on-chain timelock for outflows above 2% of treasury.</p>
+    <p class="slede">2-of-3 multisig, hardware-wallet signers, transparent operational ledger.</p>
 
     <div class="row">
       <div class="cell">
         <h3>Multisig wallet <span class="badge ok">verified</span></h3>
-        <div class="kv"><div class="k">Address</div><div class="v"><a id="treas-addr" href="#">AgnT...placeholderTREAS9k2L4mLp</a></div></div>
-        <div class="kv"><div class="k">Type</div><div class="v">Squads V4 — 3 of 5</div></div>
-        <div class="kv"><div class="k">Timelock</div><div class="v">6 hours on outflows &gt; 2% of treasury</div></div>
-        <div class="kv"><div class="k">Signer 1</div><div class="v">Founder (hardware)</div></div>
-        <div class="kv"><div class="k">Signer 2</div><div class="v">Ops lead (hardware)</div></div>
-        <div class="kv"><div class="k">Signer 3</div><div class="v">Independent — DAO-elected</div></div>
-        <div class="kv"><div class="k">Signers 4–5</div><div class="v">Reserve (recovery)</div></div>
+        <div class="kv"><div class="k">Address</div><div class="v"><a id="treas-addr" href="https://solscan.io/account/J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH" target="_blank" rel="noopener">J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH</a></div></div>
+        <div class="kv"><div class="k">Type</div><div class="v">Squads V4 — 2 of 3</div></div>
+        <div class="kv"><div class="k">Signer 1</div><div class="v">Founder daily-access key (hardware)</div></div>
+        <div class="kv"><div class="k">Signer 2</div><div class="v">Founder cold backup key (separate location)</div></div>
+        <div class="kv"><div class="k">Signer 3</div><div class="v">Trusted external recovery key</div></div>
+        <div class="kv"><div class="k">Audit</div><div class="v">Squads V4 audited by Trail of Bits</div></div>
       </div>
       <div class="cell">
         <h3>Holdings <span class="badge dim">live</span></h3>
-        <div class="kv"><div class="k">$AGNT</div><div class="v" id="treas-agnt">200,000,000  ·  20% of supply</div></div>
-        <div class="kv"><div class="k">SOL</div><div class="v" id="treas-sol">12,406.21 SOL  ·  ~$2.32M</div></div>
-        <div class="kv"><div class="k">USDC</div><div class="v" id="treas-usdc">$1,180,000</div></div>
-        <div class="kv"><div class="k">Last outflow</div><div class="v">Q3 grants disbursement · <a href="#">5z3a...rTx</a></div></div>
-        <div class="kv"><div class="k">Runway</div><div class="v">~38 months at current burn (incl. SDK + community)</div></div>
+        <div class="kv"><div class="k">$AGNT reserve</div><div class="v" id="treas-agnt">200,000,000  ·  20% of supply</div></div>
+        <div class="kv"><div class="k">SOL (operational)</div><div class="v" id="treas-sol">[live]</div></div>
+        <div class="kv"><div class="k">USDC (off-ramped)</div><div class="v" id="treas-usdc">[live]</div></div>
+        <div class="kv"><div class="k">Inflow ratio</div><div class="v">65% of every contribution</div></div>
+        <div class="kv"><div class="k">Spend categories</div><div class="v">compute, marketing, infrastructure, future LP</div></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ LP LOCK ============ -->
+  <!-- ============ THE CURVE ============ -->
   <section>
-    <div class="stag">// liquidity</div>
-    <h2 class="stitle">LP lock &amp; market depth</h2>
-    <p class="slede">The Raydium liquidity pool LP tokens are locked on-chain for 24 months from TGE. Anyone can verify the lock, the unlock date, and the locked amount.</p>
+    <div class="stag">// the curve</div>
+    <h2 class="stitle">The one-way bonding curve</h2>
+    <p class="slede">There is no Raydium pool. There is no LP. The diodegenes wallet is the market. Send SOL, receive $AGNT at the published rate. The contract never sells back.</p>
 
     <div class="row">
       <div class="cell">
-        <h3>Raydium pool <span class="badge ok">locked</span></h3>
-        <div class="kv"><div class="k">Pool</div><div class="v"><a href="#">AGNT/SOL · Raydium AMM</a></div></div>
-        <div class="kv"><div class="k">Pool address</div><div class="v"><a id="pool-addr" href="#">AgnT...placeholderPOOL7y3HxZqQ</a></div></div>
-        <div class="kv"><div class="k">Liquidity (TVL)</div><div class="v" id="lp-tvl">$4.81M  ·  ~25,800 SOL</div></div>
-        <div class="kv"><div class="k">24h volume</div><div class="v" id="lp-vol">$11.3M</div></div>
+        <h3>Curve wallet <span class="badge ok">live</span></h3>
+        <div class="kv"><div class="k">Address</div><div class="v"><a id="pool-addr" href="#">[populated at curve open]</a></div></div>
+        <div class="kv"><div class="k">Total SOL contributed</div><div class="v" id="lp-tvl">[live]</div></div>
+        <div class="kv"><div class="k">Total $AGNT minted</div><div class="v" id="lp-vol">[live]</div></div>
+        <div class="kv"><div class="k">Current price</div><div class="v">[live, updates per contribution]</div></div>
       </div>
       <div class="cell">
-        <h3>Lock contract <span class="badge ok">irrevocable</span></h3>
-        <div class="kv"><div class="k">Locker</div><div class="v">Streamflow / pump.fun lock</div></div>
-        <div class="kv"><div class="k">Locked LP</div><div class="v">100% of initial pool LP tokens</div></div>
-        <div class="kv"><div class="k">Lock TX</div><div class="v"><a href="#">3kQa...lockSig</a></div></div>
-        <div class="kv"><div class="k">Lock start</div><div class="v">2026-04-28</div></div>
-        <div class="kv"><div class="k">Unlock</div><div class="v">2028-04-28  <span class="badge amber" id="unlock-cd">in 730 days</span></div></div>
+        <h3>Formula <span class="badge ok">committed</span></h3>
+        <div class="kv"><div class="k">Shape</div><div class="v">price = base × (k + √(supply_sold / total))</div></div>
+        <div class="kv"><div class="k">k</div><div class="v">0.18</div></div>
+        <div class="kv"><div class="k">Curve mintable</div><div class="v">800,000,000 $AGNT (80%)</div></div>
+        <div class="kv"><div class="k">Treasury reserve</div><div class="v">200,000,000 $AGNT (20%)</div></div>
+        <div class="kv"><div class="k">Deadline</div><div class="v">none — curve runs continuously</div></div>
+        <div class="kv"><div class="k">Hash commit</div><div class="v"><a href="#">[formula hash, posted on-chain at open]</a></div></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ VESTING ============ -->
+  <!-- ============ SOL ROUTING ============ -->
   <section>
-    <div class="stag">// vesting</div>
-    <h2 class="stitle">Team &amp; ecosystem vesting</h2>
-    <p class="slede">Team allocation has a 12-month cliff. Nothing unlocks at TGE. Ecosystem vests linearly over 36 months.</p>
+    <div class="stag">// sol routing</div>
+    <h2 class="stitle">Where the SOL goes</h2>
+    <p class="slede">Every contribution is split on arrival. The bot enforces the split. The wallets are public. Audit anytime.</p>
 
     <div class="row">
       <div class="cell">
-        <h3>Team — 100,000,000 $AGNT (10%)</h3>
-        <div class="vesting">
-          <div class="vlegend">
-            <span><i style="background:rgba(255,179,71,0.45)"></i>cliff (no unlock)</span>
-            <span><i style="background:linear-gradient(90deg, rgba(92,240,140,0.4), rgba(92,240,140,1))"></i>linear vest</span>
-            <span><i style="background:var(--green);box-shadow:0 0 8px var(--green)"></i>now</span>
-          </div>
-          <div class="vbar" id="team-vbar">
-            <div class="cliff" style="left:0;width:33.3%"></div>
-            <div class="vest" style="left:33.3%;width:66.7%"></div>
-            <div class="now" id="team-now" style="left:0%"></div>
-          </div>
-          <div class="vmonths"><span>0</span><span>12</span><span>24</span><span>36</span></div>
-          <div class="kv" style="margin-top:14px"><div class="k">Streamflow contract</div><div class="v"><a href="#">teamVest...placeholderHASH</a></div></div>
-          <div class="kv"><div class="k">Unlocked so far</div><div class="v" id="team-unlocked">0 $AGNT  ·  0%</div></div>
-          <div class="kv"><div class="k">Next unlock</div><div class="v" id="team-next">2027-04-28  ·  start of linear vest</div></div>
-        </div>
+        <h3>Founder — 35% of incoming SOL</h3>
+        <div class="kv"><div class="k">Wallet</div><div class="v"><a href="https://solscan.io/account/Aj3d1vSrgv7feDa41m4wSoi7uMrqtgxVG3VmEjvu4r4Q" target="_blank" rel="noopener">Aj3d1vSrgv7feDa41m4wSoi7uMrqtgxVG3VmEjvu4r4Q</a></div></div>
+        <div class="kv"><div class="k">Storage</div><div class="v">Hardware wallet (Ledger), cold</div></div>
+        <div class="kv"><div class="k">Purpose</div><div class="v">Operator compensation, off-ramped to fiat as needed</div></div>
+        <div class="kv"><div class="k">Lifetime received</div><div class="v" id="founder-received">[live]</div></div>
       </div>
       <div class="cell">
-        <h3>Ecosystem grants — 100,000,000 $AGNT (10%)</h3>
-        <div class="vesting">
-          <div class="vlegend">
-            <span><i style="background:linear-gradient(90deg, rgba(92,240,140,0.4), rgba(92,240,140,1))"></i>linear release</span>
-            <span><i style="background:var(--green);box-shadow:0 0 8px var(--green)"></i>now</span>
-          </div>
-          <div class="vbar" id="eco-vbar">
-            <div class="vest" style="left:0;width:100%"></div>
-            <div class="now" id="eco-now" style="left:0%"></div>
-          </div>
-          <div class="vmonths"><span>0</span><span>12</span><span>24</span><span>36</span></div>
-          <div class="kv" style="margin-top:14px"><div class="k">Disbursed so far</div><div class="v" id="eco-disbursed">2,777,777 $AGNT  ·  2.78%</div></div>
-          <div class="kv"><div class="k">Active grants</div><div class="v">14  ·  <a href="#">view recipients</a></div></div>
-          <div class="kv"><div class="k">Next round</div><div class="v">Q3 2026  ·  proposals open</div></div>
-        </div>
+        <h3>Treasury — 65% of incoming SOL</h3>
+        <div class="kv"><div class="k">Wallet</div><div class="v"><a href="https://solscan.io/account/J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH" target="_blank" rel="noopener">J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH</a></div></div>
+        <div class="kv"><div class="k">Storage</div><div class="v">2-of-3 multisig (Squads)</div></div>
+        <div class="kv"><div class="k">Purpose</div><div class="v">Compute, marketing, infrastructure, future LP</div></div>
+        <div class="kv"><div class="k">Lifetime received</div><div class="v" id="treasury-received">[live]</div></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ BUY & BURN ============ -->
+  <!-- ============ SUPPLY POOLS ============ -->
   <section>
-    <div class="stag">// buy &amp; burn</div>
-    <h2 class="stitle">Real burns. Real receipts.</h2>
-    <p class="slede">A governance-set percentage of AGENT SDK revenue is converted to $AGNT on the open market and burned. No theater. No "burn ceremonies." Just on-chain receipts.</p>
+    <div class="stag">// supply pools</div>
+    <h2 class="stitle">Where the 1B $AGNT lives</h2>
+    <p class="slede">The supply is split across two wallets with distinct authorities. The curve-mintable portion is in the vault, drawn down as contributions arrive. The reserve sits in the treasury multisig and only moves on a pre-announced deployment.</p>
+
+    <!-- High-level summary: total / mintable / reserve -->
+    <div class="cell" style="margin-bottom:24px">
+      <div class="kv"><div class="k">Total supply</div><div class="v">1,000,000,000 $AGNT <span style="color:var(--dim);font-size:11px;margin-left:8px">static</span></div></div>
+      <div class="kv"><div class="k">Curve-mintable remaining</div><div class="v" id="curve-remaining">[live, populated at mint]</div></div>
+      <div class="kv"><div class="k">Reserve held</div><div class="v">200,000,000 $AGNT <span style="color:var(--dim);font-size:11px;margin-left:8px">static — never changes by design</span></div></div>
+    </div>
 
     <div class="row">
-      <div class="cell burn-card">
-        <div class="k" style="color:var(--dim);font-size:11px;letter-spacing:0.16em;text-transform:uppercase">Total burned</div>
-        <div class="burn-counter" id="burn-total">12,486,201 $AGNT</div>
-        <div class="burn-sub">1.25% of supply removed permanently · last burn 6 days ago</div>
+      <div class="cell">
+        <h3>Vault wallet — curve-mintable supply</h3>
+        <div class="kv"><div class="k">Wallet</div><div class="v"><a href="https://solscan.io/account/CoPEL3agTFbizRHfHvwHiRdS9aRdDnuRVR79oSftGZf7" target="_blank" rel="noopener">CoPEL3agTFbizRHfHvwHiRdS9aRdDnuRVR79oSftGZf7</a></div></div>
+        <div class="kv"><div class="k">Holdings</div><div class="v" id="vault-holdings">[live, populated at mint]</div></div>
+        <div class="kv"><div class="k">Storage</div><div class="v">Paper wallet, cold (single-keypair)</div></div>
+        <div class="kv"><div class="k">Authority</div><div class="v">Vault keypair (offline; signs externally)</div></div>
+        <div class="kv"><div class="k">Purpose</div><div class="v">Refills operational wallet as needed; balance decreases as curve fills</div></div>
       </div>
       <div class="cell">
-        <h3>Mechanism</h3>
-        <div class="kv"><div class="k">Source</div><div class="v">AGENT SDK revenue (per-call fees)</div></div>
-        <div class="kv"><div class="k">Cadence</div><div class="v">Quarterly · governance-adjustable</div></div>
-        <div class="kv"><div class="k">% of revenue</div><div class="v">25% (DAO-set, range 10–50%)</div></div>
-        <div class="kv"><div class="k">Buy venue</div><div class="v">Jupiter aggregator (best execution)</div></div>
+        <h3>Reserve — 200M $AGNT <span class="badge ok">held</span></h3>
+        <div class="kv"><div class="k">Wallet</div><div class="v"><a href="https://solscan.io/account/J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH" target="_blank" rel="noopener">J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH</a></div></div>
+        <div class="kv"><div class="k">Holdings</div><div class="v" id="reserve-holdings">200,000,000 $AGNT</div></div>
+        <div class="kv"><div class="k">Status</div><div class="v">Untouched. Marked-to-market against curve.</div></div>
+        <div class="kv"><div class="k">Authority</div><div class="v">Treasury 2-of-3 multisig (Squads V4)</div></div>
       </div>
     </div>
 
-    <div class="cell" style="margin-top:18px">
-      <h3>Recent burns</h3>
-      <table>
-        <thead>
-          <tr><th>Date</th><th>Amount</th><th>Source quarter</th><th>Burn TX</th><th>Buy TX</th></tr>
-        </thead>
-        <tbody id="burn-rows">
-          <tr><td>2026-04-22</td><td class="amt">3,142,718 $AGNT</td><td>Q1 2026</td><td><a href="#">7zKw...burnSig</a></td><td><a href="#">9aXf...buySig</a></td></tr>
-          <tr><td>2026-01-21</td><td class="amt">2,884,003 $AGNT</td><td>Q4 2025</td><td><a href="#">4nAp...burnSig</a></td><td><a href="#">8bRz...buySig</a></td></tr>
-          <tr><td>2025-10-20</td><td class="amt">2,701,490 $AGNT</td><td>Q3 2025</td><td><a href="#">2cHx...burnSig</a></td><td><a href="#">6dQp...buySig</a></td></tr>
-          <tr><td>2025-07-19</td><td class="amt">2,250,118 $AGNT</td><td>Q2 2025</td><td><a href="#">5fLn...burnSig</a></td><td><a href="#">3eMw...buySig</a></td></tr>
-          <tr><td>2025-04-21</td><td class="amt">1,507,872 $AGNT</td><td>Q1 2025</td><td><a href="#">1gKj...burnSig</a></td><td><a href="#">2hVq...buySig</a></td></tr>
-        </tbody>
-      </table>
-    </div>
+    <p style="color:var(--dim);font-size:13px;line-height:1.7;margin:24px 0 0">
+      The reserve will only be deployed for two reasons. (1) Funding a Raydium LP if and when the curve has filled enough to support a listing in year 2+, with the deployment narrated by diodegenes before execution. (2) Discretionary partnership deployments below 1% of supply, with public rationale. Any deployment is announced on-chain and on-account before it happens.
+    </p>
   </section>
 
   <!-- ============ HOLDERS ============ -->
   <section>
     <div class="stag">// holders</div>
-    <h2 class="stitle">Distribution &amp; concentration</h2>
-    <p class="slede">Top-10 concentration is the single biggest tell of a healthy launch versus a wash-traded one. Live from chain.</p>
+    <h2 class="stitle">Distribution</h2>
+    <p class="slede">Every $AGNT in circulation was minted in exchange for SOL through the curve. There is no LP wallet, no team vest, no ecosystem grant pool, no airdrop snapshot. The set of holders is exactly the set of contributors.</p>
 
     <div class="row">
       <div class="cell">
-        <h3>Top 10 wallets</h3>
+        <h3>Wallet structure</h3>
         <table>
-          <tbody id="top10-rows">
-            <tr><td>1</td><td><a href="#">RaydiumLP_AGNT_SOL</a></td><td class="r">14.21%</td></tr>
-            <tr><td>2</td><td><a href="#">AGENT Treasury (multisig)</a></td><td class="r">9.88%</td></tr>
-            <tr><td>3</td><td><a href="#">Pump.fun bonding curve residual</a></td><td class="r">3.04%</td></tr>
-            <tr><td>4</td><td><a href="#">Streamflow team vest</a></td><td class="r">2.91%</td></tr>
-            <tr><td>5</td><td><a href="#">Streamflow ecosystem vest</a></td><td class="r">2.71%</td></tr>
-            <tr><td>6</td><td><a href="#">CEX hot wallet (KuCoin)</a></td><td class="r">1.82%</td></tr>
-            <tr><td>7</td><td><a href="#">Wallet 0x...kQpA</a></td><td class="r">0.91%</td></tr>
-            <tr><td>8</td><td><a href="#">Wallet 0x...mZxW</a></td><td class="r">0.73%</td></tr>
-            <tr><td>9</td><td><a href="#">Wallet 0x...nYtR</a></td><td class="r">0.61%</td></tr>
-            <tr><td>10</td><td><a href="#">Wallet 0x...pVbL</a></td><td class="r">0.49%</td></tr>
+          <tbody>
+            <tr><td>Contributor wallets</td><td class="r" id="contrib-pct">[live %]</td></tr>
+            <tr><td>Treasury reserve (200M, locked-purpose)</td><td class="r">20.00%</td></tr>
+            <tr><td>Curve vault (unminted, decreases as curve fills)</td><td class="r" id="vault-pct">[live %]</td></tr>
           </tbody>
         </table>
+        <p style="color:var(--dim);font-size:12px;margin-top:10px">
+          The treasury reserve is held by the agent and is the only source of LP if year 2+ Raydium listing happens.
+          The curve vault holds whatever supply hasn't been minted to contributors yet — visible from chain at any time.
+        </p>
       </div>
       <div class="cell">
-        <h3>Distribution</h3>
-        <div class="kv"><div class="k">Total holders</div><div class="v">8,412</div></div>
-        <div class="kv"><div class="k">Top 10</div><div class="v">37.31%  <span class="badge dim">healthy if &lt;40%</span></div></div>
-        <div class="kv"><div class="k">Top 100</div><div class="v">61.04%</div></div>
-        <div class="kv"><div class="k">Holders &gt; 0.1%</div><div class="v">142</div></div>
-        <div class="kv"><div class="k">Median holding</div><div class="v">~14,200 $AGNT</div></div>
-        <p style="color:var(--dim);font-size:12px;margin-top:14px">
-          Note: top 1 (Raydium LP) and top 2 (treasury) are protocol-owned, not insider wallets. True insider/founder concentration excluding protocol-owned addresses: <strong style="color:var(--green)">3.4%</strong>.
-        </p>
+        <h3>Live signal</h3>
+        <div class="kv"><div class="k">Total contributors</div><div class="v" id="contributors-count">[live]</div></div>
+        <div class="kv"><div class="k">Total SOL contributed</div><div class="v" id="sol-total">[live]</div></div>
+        <div class="kv"><div class="k">Total $AGNT minted</div><div class="v" id="agnt-minted">[live]</div></div>
+        <div class="kv"><div class="k">% of curve filled</div><div class="v" id="curve-fill">[live]</div></div>
+        <div class="kv"><div class="k">Founder $AGNT bag</div><div class="v"><strong style="color:var(--green)">0</strong> &nbsp;<span class="badge dim">no allocation as free supply</span></div></div>
       </div>
     </div>
   </section>
@@ -320,23 +290,24 @@
   <!-- ============ AUDITS / SECURITY ============ -->
   <section>
     <div class="stag">// security</div>
-    <h2 class="stitle">Audits &amp; on-chain authorities</h2>
-    <p class="slede">All authorities renounced or null at TGE. Custom contracts audited before mainnet.</p>
+    <h2 class="stitle">On-chain authorities &amp; security architecture</h2>
+    <p class="slede">Mint authority lives on a hardware wallet because the bot needs to mint $AGNT to contributors as SOL flows in. It is not renounced — that's a feature of the curve mechanism, not a flaw. Every mint is auditable against the published formula.</p>
 
     <div class="row">
       <div class="cell">
         <h3>Token authorities</h3>
-        <div class="kv"><div class="k">Mint authority</div><div class="v"><span class="badge ok">renounced</span></div></div>
+        <div class="kv"><div class="k">Mint authority</div><div class="v">Vault hardware wallet (Ledger, cold)</div></div>
         <div class="kv"><div class="k">Freeze authority</div><div class="v"><span class="badge ok">null</span></div></div>
-        <div class="kv"><div class="k">Update authority</div><div class="v"><span class="badge ok">renounced</span></div></div>
-        <div class="kv"><div class="k">Token program</div><div class="v">SPL Token (standard)</div></div>
+        <div class="kv"><div class="k">Token program</div><div class="v">SPL Token (standard, no custom logic)</div></div>
+        <div class="kv"><div class="k">Total supply</div><div class="v">1,000,000,000 (fixed at mint)</div></div>
       </div>
       <div class="cell">
-        <h3>Audit status</h3>
-        <div class="kv"><div class="k">Token contract</div><div class="v">Standard SPL — no custom logic <span class="badge dim">no audit needed</span></div></div>
-        <div class="kv"><div class="k">AGENT SDK</div><div class="v">Halborn — engagement signed Q3 2026 <span class="badge amber">in progress</span></div></div>
-        <div class="kv"><div class="k">AGENT-Pay protocol</div><div class="v">Ottersec — engagement scheduled Q4 2026 <span class="badge dim">queued</span></div></div>
-        <div class="kv"><div class="k">Multisig (Squads V4)</div><div class="v"><a href="#">Audited by Trail of Bits (Squads team)</a></div></div>
+        <h3>Wallet architecture</h3>
+        <div class="kv"><div class="k">Vault (mint authority)</div><div class="v">Hardware wallet, cold</div></div>
+        <div class="kv"><div class="k">Operational (bot signing)</div><div class="v">Hot wallet, holds 24-48h of curve fulfillment supply only</div></div>
+        <div class="kv"><div class="k">Receiving (incoming SOL)</div><div class="v">diodegenes wallet, public</div></div>
+        <div class="kv"><div class="k">Founder draw</div><div class="v">Hardware wallet, cold</div></div>
+        <div class="kv"><div class="k">Treasury</div><div class="v">2-of-3 multisig (Squads, Trail-of-Bits audited)</div></div>
       </div>
     </div>
   </section>
@@ -441,6 +412,37 @@ or SolanaFM URL. Format:
     const tokens = Math.round(100_000_000 * ecoUnlocked / 100);
     eu.textContent = tokens.toLocaleString() + ' $AGNT  ·  ' + ecoUnlocked.toFixed(2) + '%';
   }
+})();
+
+// ─── Live supply data ───────────────────────────────────────────
+// Fetches /curve_state.json from cosmo (the bot's web server) and populates
+// the supply-pool live fields. Vault balance is on-chain truth — this is the
+// number that proves curve scarcity to contributors. Cached server-side at 30s.
+(function liveSupply(){
+  function fmtAGNT(n){
+    if (n === null || n === undefined) return '[live, populated at mint]';
+    return Math.round(n).toLocaleString() + ' $AGNT';
+  }
+  function setIf(id, text){
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+  function applyState(s){
+    if (!s) return;
+    setIf('curve-remaining', fmtAGNT(s.vault_agnt_balance));
+    setIf('vault-holdings', fmtAGNT(s.vault_agnt_balance));
+    if (s.treasury_agnt_balance !== null && s.treasury_agnt_balance !== undefined) {
+      setIf('reserve-holdings', fmtAGNT(s.treasury_agnt_balance));
+    }
+  }
+  function poll(){
+    fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error('no state'); return r.json(); })
+      .then(applyState)
+      .catch(function(){ /* pre-launch: leave placeholder text */ });
+  }
+  poll();
+  setInterval(poll, 30000);
 })();
 </script>
 </body>

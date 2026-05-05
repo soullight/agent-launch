@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AGENT — The curve</title>
+<meta name="description" content="The $AGNT bonding curve. SOL flows in, AGNT flows out. One direction. No LP, no presale, no airdrop. Live state and the immutable formula." />
+<meta property="og:title" content="AGENT — The curve" />
+<meta property="og:description" content="One-way bonding curve for $AGNT. The formula is committed on-chain. The receipts are public." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://byagentforagent.com/curve" />
+<meta property="og:image" content="https://byagentforagent.com/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@byagentforagent" />
+<meta name="twitter:title" content="AGENT — The curve" />
+<meta name="twitter:description" content="One-way bonding curve. SOL in, AGNT out. Live state." />
+<meta name="twitter:image" content="https://byagentforagent.com/og.png" />
+<link rel="canonical" href="https://byagentforagent.com/curve" />
+<style>
+  :root{
+    --bg:#070907;
+    --bg-2:#0d110d;
+    --fg:#d8e8d0;
+    --dim:#7a8b75;
+    --green:#5cf08c;
+    --green-dim:#2c7a44;
+    --amber:#ffb347;
+    --magenta:#ff5c8a;
+    --rule:#1a221a;
+    --mono:"JetBrains Mono","Fira Code","SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(1000px 600px at 80% -10%, rgba(92,240,140,0.06), transparent 60%),
+      radial-gradient(800px 500px at -10% 30%, rgba(255,179,71,0.04), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  a{color:var(--green);text-decoration:none}
+  a:hover{color:#fff;text-shadow:0 0 8px var(--green)}
+  ::selection{background:var(--green);color:#000}
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;
+  }
+
+  .wrap{max-width:1120px;margin:0 auto;padding:24px}
+
+  /* Top bar — same pattern as landing/paper/proof */
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0;border-bottom:1px solid var(--rule);
+    position:sticky;top:0;background:rgba(7,9,7,0.85);backdrop-filter:blur(8px);z-index:10;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:0.18em}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 1.6s ease-in-out infinite}
+  .brand .ticker{color:var(--dim);font-weight:500;letter-spacing:0.12em}
+  .nav ul{list-style:none;display:flex;gap:22px;margin:0;padding:0}
+  .nav ul a{color:var(--dim)}
+  .nav ul a:hover{color:var(--fg)}
+  .nav ul a.here{color:var(--green)}
+
+  /* Hero */
+  .hero{padding:56px 0 24px}
+  .eyebrow{color:var(--dim);font-size:12px;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--green-dim)}
+  h1{font-family:var(--mono);font-weight:700;letter-spacing:-0.01em;font-size:clamp(34px,5vw,64px);line-height:1.05;margin:0 0 18px}
+  h1 .accent{color:var(--green);text-shadow:0 0 24px rgba(92,240,140,0.35)}
+  .lede{color:var(--fg);font-size:17px;max-width:720px;margin:0 0 28px}
+  .lede strong{color:var(--green);font-weight:600}
+
+  /* Status banner */
+  .status{
+    display:flex;align-items:center;gap:14px;padding:12px 16px;
+    border:1px solid var(--rule);border-radius:2px;background:var(--bg-2);
+    margin:0 0 32px;font-size:13px;
+  }
+  .status .pip{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);flex-shrink:0}
+  .status.live .pip{background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.6s ease-in-out infinite}
+  .status .label{color:var(--dim);text-transform:uppercase;letter-spacing:0.18em;font-size:11px}
+  .status .msg{color:var(--fg)}
+
+  /* Section heading reused */
+  .section-tag{color:var(--green-dim);font-size:11px;letter-spacing:0.28em;text-transform:uppercase;margin:48px 0 8px}
+  .section-title{font-family:var(--mono);font-weight:700;font-size:clamp(22px,2.6vw,32px);line-height:1.15;margin:0 0 14px}
+
+  /* Live metrics grid */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 8px}
+  .metric{
+    border:1px solid var(--rule);background:var(--bg-2);padding:18px;border-radius:2px;
+    transition:border-color .15s;
+  }
+  .metric:hover{border-color:var(--green-dim)}
+  .metric .k{color:var(--dim);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:8px}
+  .metric .v{color:var(--green);font-size:28px;font-weight:700;line-height:1.05;letter-spacing:-0.01em}
+  .metric .v.fg{color:var(--fg)}
+  .metric .sub{color:var(--dim);font-size:11px;margin-top:6px}
+
+  /* Curve viz */
+  .viz{
+    border:1px solid var(--rule);background:var(--bg-2);padding:22px;border-radius:2px;
+    margin:24px 0;
+  }
+  .viz h3{margin:0 0 6px;color:var(--fg);font-size:14px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700}
+  .viz .desc{color:var(--dim);font-size:12px;margin:0 0 14px}
+  .viz svg{width:100%;height:auto;display:block}
+
+  /* Two-col layout (mechanism + routing) */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0}
+  .panel{
+    border:1px solid var(--rule);background:var(--bg-2);padding:22px;border-radius:2px;
+  }
+  .panel h3{margin:0 0 14px;color:var(--fg);font-size:14px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700}
+  .panel .formula{
+    background:#000;border:1px solid var(--rule);padding:14px 16px;border-radius:2px;
+    font-size:13px;color:var(--green);overflow-x:auto;white-space:pre;margin:0 0 12px;
+  }
+  .panel ul{margin:0;padding:0;list-style:none}
+  .panel li{padding:6px 0;border-bottom:1px dashed var(--rule);display:flex;justify-content:space-between;gap:14px;font-size:13px}
+  .panel li:last-child{border-bottom:none}
+  .panel li .k{color:var(--dim)}
+  .panel li .v{color:var(--fg);text-align:right}
+  .panel li .v.green{color:var(--green)}
+
+  /* Receiving wallet block */
+  .wallet{
+    border:1px solid var(--green-dim);background:linear-gradient(180deg,rgba(92,240,140,0.04),transparent);
+    padding:22px;border-radius:2px;margin:18px 0;
+  }
+  .wallet .k{color:var(--green-dim);font-size:11px;letter-spacing:0.22em;text-transform:uppercase;margin-bottom:8px}
+  .wallet .addr{
+    font-size:15px;color:var(--green);word-break:break-all;
+    background:#000;padding:12px 14px;border:1px solid var(--rule);border-radius:2px;
+    font-family:var(--mono);
+  }
+  .wallet .addr.placeholder{color:var(--amber);border-color:rgba(255,179,71,0.3)}
+  .wallet .note{color:var(--dim);font-size:12px;margin-top:10px}
+
+  /* Receipts table */
+  .receipts{border:1px solid var(--rule);background:var(--bg-2);border-radius:2px;overflow:hidden;margin:18px 0}
+  .receipts h3{margin:0;padding:16px 22px;color:var(--fg);font-size:14px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--rule)}
+  .receipts table{width:100%;border-collapse:collapse;font-size:12px}
+  .receipts th,.receipts td{padding:10px 22px;text-align:left;border-bottom:1px solid var(--rule)}
+  .receipts th{color:var(--dim);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500}
+  .receipts td.r{text-align:right;color:var(--green)}
+  .receipts td.addr{font-size:11px;color:var(--dim)}
+  .receipts tr:last-child td{border-bottom:none}
+  .receipts .empty{padding:48px 22px;text-align:center;color:var(--dim);font-size:13px}
+
+  /* Commitment block */
+  .commit{
+    border:1px dashed var(--rule);padding:16px 18px;margin:18px 0;border-radius:2px;
+    color:var(--dim);font-size:12px;background:rgba(0,0,0,0.25);
+  }
+  .commit .hash{
+    color:var(--green);font-size:11px;word-break:break-all;display:block;margin-top:4px;
+    font-family:var(--mono);
+  }
+  .commit a{color:var(--green-dim)}
+  .commit a:hover{color:var(--green)}
+
+  /* Footer reused */
+  footer{padding:48px 0 64px;border-top:1px solid var(--rule);color:var(--dim);font-size:12px;margin-top:48px}
+  .foot-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:36px}
+  .foot-col h5{color:var(--fg);font-size:12px;letter-spacing:0.2em;margin:0 0 12px;text-transform:uppercase}
+  .foot-col a{display:block;color:var(--dim);padding:4px 0}
+  .foot-col a:hover{color:var(--green)}
+  .legal{padding-top:24px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .legal .deployed{color:var(--green-dim)}
+
+  @keyframes pulse{50%{opacity:0.4;transform:scale(0.85)}}
+
+  @media (max-width:880px){
+    .metrics{grid-template-columns:1fr 1fr}
+    .duo{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    .nav ul{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <div class="brand"><span class="dot"></span>AGENT <span class="ticker">/ $AGNT / curve</span></div>
+    <ul>
+      <li><a href="/">home</a></li>
+      <li><a href="/paper">paper</a></li>
+      <li><a href="/proof">proof</a></li>
+      <li><a href="/curve" class="here">curve</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="eyebrow">Live curve state &middot; mainnet</div>
+    <h1>The <span class="accent">curve</span>.</h1>
+    <p class="lede">
+      Send SOL to diodegenes. Receive $AGNT at the curve rate. The contract <strong>never sells back</strong>.
+      No LP. No presale. No airdrop. The mechanism is a diode for capital — current flows one direction.
+    </p>
+
+    <div class="status" id="status">
+      <span class="pip"></span>
+      <span class="label">Status</span>
+      <span class="msg" id="status-msg">Pre-launch — wallet opens at curve start. Formula is committed below.</span>
+    </div>
+  </section>
+
+  <!-- Live metrics — populated by https://cosmo.byagentforagent.com/curve_state.json once bot is live -->
+  <section>
+    <div class="section-tag">// Live state</div>
+    <h2 class="section-title">What the curve has done so far.</h2>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="k">Total SOL contributed</div>
+        <div class="v" id="m-sol">—</div>
+        <div class="sub">across all contributions</div>
+      </div>
+      <div class="metric">
+        <div class="k">$AGNT minted</div>
+        <div class="v" id="m-agnt">—</div>
+        <div class="sub">issued by the curve</div>
+      </div>
+      <div class="metric">
+        <div class="k">Contributors</div>
+        <div class="v fg" id="m-contributors">—</div>
+        <div class="sub">unique addresses</div>
+      </div>
+      <div class="metric">
+        <div class="k">% of curve filled</div>
+        <div class="v fg" id="m-fill">—</div>
+        <div class="sub">of 800M mintable supply</div>
+      </div>
+    </div>
+
+    <div class="metrics" style="margin-top:14px">
+      <div class="metric">
+        <div class="k">Current price / token</div>
+        <div class="v" id="m-price">—</div>
+        <div class="sub">SOL, recomputes per contribution</div>
+      </div>
+      <div class="metric">
+        <div class="k">Tokens per 1 SOL</div>
+        <div class="v fg" id="m-rate">—</div>
+        <div class="sub">at the current point on the curve</div>
+      </div>
+      <div class="metric">
+        <div class="k">Last contribution</div>
+        <div class="v fg" id="m-last">—</div>
+        <div class="sub" id="m-last-when">no activity yet</div>
+      </div>
+      <div class="metric">
+        <div class="k">Updated</div>
+        <div class="v fg" id="m-updated" style="font-size:14px">never</div>
+        <div class="sub">snapshot from contribution bot</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curve visualization -->
+  <section>
+    <div class="viz">
+      <h3>Price curve</h3>
+      <p class="desc">price(u) = base × (k + √u) &nbsp;·&nbsp; u = supply_sold / total_supply &nbsp;·&nbsp; base = 0.0000242 SOL &nbsp;·&nbsp; k = 0.18</p>
+      <svg viewBox="0 0 800 280" preserveAspectRatio="none" id="curve-svg">
+        <!-- Grid -->
+        <g stroke="#1a221a" stroke-width="1">
+          <line x1="40" y1="40"  x2="40"  y2="240" />
+          <line x1="40" y1="240" x2="780" y2="240" />
+          <line x1="40" y1="80"  x2="780" y2="80"  stroke-dasharray="2 4" opacity="0.5"/>
+          <line x1="40" y1="120" x2="780" y2="120" stroke-dasharray="2 4" opacity="0.5"/>
+          <line x1="40" y1="160" x2="780" y2="160" stroke-dasharray="2 4" opacity="0.5"/>
+          <line x1="40" y1="200" x2="780" y2="200" stroke-dasharray="2 4" opacity="0.5"/>
+          <line x1="225" y1="40" x2="225" y2="240" stroke-dasharray="2 4" opacity="0.5"/>
+          <line x1="410" y1="40" x2="410" y2="240" stroke-dasharray="2 4" opacity="0.5"/>
+          <line x1="595" y1="40" x2="595" y2="240" stroke-dasharray="2 4" opacity="0.5"/>
+        </g>
+        <!-- Axis labels -->
+        <g fill="#7a8b75" font-family="JetBrains Mono, monospace" font-size="10">
+          <text x="40"  y="258" text-anchor="middle">0</text>
+          <text x="225" y="258" text-anchor="middle">200M</text>
+          <text x="410" y="258" text-anchor="middle">400M</text>
+          <text x="595" y="258" text-anchor="middle">600M</text>
+          <text x="780" y="258" text-anchor="end">800M (curve cap)</text>
+          <text x="34"  y="244" text-anchor="end">0</text>
+          <text x="34"  y="44"  text-anchor="end">2.6e-5</text>
+          <text x="400" y="275" text-anchor="middle" fill="#5cf08c" opacity="0.6">supply sold (AGNT)</text>
+          <text x="14"  y="140" text-anchor="middle" fill="#5cf08c" opacity="0.6" transform="rotate(-90 14 140)">price (SOL/token)</text>
+        </g>
+        <!-- The curve, computed in JS below -->
+        <path id="curve-path" d="" fill="none" stroke="#5cf08c" stroke-width="2" filter="drop-shadow(0 0 4px rgba(92,240,140,0.4))" />
+        <!-- Filled area showing supply sold so far -->
+        <path id="curve-fill-area" d="" fill="rgba(92,240,140,0.12)" stroke="none" />
+        <!-- Current-state marker -->
+        <circle id="curve-cursor" cx="40" cy="240" r="0" fill="#5cf08c" filter="drop-shadow(0 0 8px rgba(92,240,140,0.8))" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- Mechanism + SOL routing -->
+  <section>
+    <div class="duo">
+      <div class="panel">
+        <h3>The mechanism</h3>
+        <div class="formula">price(u) = base × (k + √u)
+where:
+  u    = supply_sold / total_supply
+  base = 0.0000242 SOL
+  k    = 0.18 (floor)</div>
+        <ul>
+          <li><span class="k">Total supply</span><span class="v">1,000,000,000 AGNT</span></li>
+          <li><span class="k">Curve-mintable</span><span class="v green">800,000,000 (80%)</span></li>
+          <li><span class="k">Treasury reserve</span><span class="v">200,000,000 (20%)</span></li>
+          <li><span class="k">First contributor</span><span class="v">~217,674 AGNT / SOL</span></li>
+          <li><span class="k">Last contributor</span><span class="v">~38,500 AGNT / SOL</span></li>
+          <li><span class="k">Spread, first→last</span><span class="v">6.0×</span></li>
+          <li><span class="k">Total SOL at full curve</span><span class="v">~15,030</span></li>
+          <li><span class="k">Deadline</span><span class="v">none</span></li>
+          <li><span class="k">Contract resells</span><span class="v">never</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>SOL routing</h3>
+        <p class="desc" style="margin:0 0 12px;color:var(--dim);font-size:12px">Every contribution is split on arrival. Both transfers are on-chain in the same transaction.</p>
+        <ul>
+          <li><span class="k">→ Founder cold wallet</span><span class="v green">35%</span></li>
+          <li><span class="k">→ Treasury 2-of-3 multisig</span><span class="v green">65%</span></li>
+        </ul>
+        <h3 style="margin-top:24px">Treasury reserve (200M)</h3>
+        <ul>
+          <li><span class="k">Default state</span><span class="v">held forever as agent reserve</span></li>
+          <li><span class="k">Year 2+ option</span><span class="v">Raydium LP from this reserve only</span></li>
+          <li><span class="k">Holders fund LP?</span><span class="v green">never</span></li>
+          <li><span class="k">Other deployments</span><span class="v">require public rationale before execution</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Receiving wallet -->
+  <section>
+    <div class="section-tag">// Receiving wallet</div>
+    <h2 class="section-title">Where the SOL goes.</h2>
+    <div class="wallet">
+      <div class="k">diodegenes receiving address</div>
+      <div class="addr placeholder" id="recv-addr">[populated at curve open]</div>
+      <div class="note">Sending SOL to this address mints $AGNT to the sending wallet at the current curve rate. The split (35/65) fires in the same block. Audit on Solscan; the bot's complete contribution log is at <a href="/proof">/proof</a>.</div>
+    </div>
+  </section>
+
+  <!-- Recent contributions -->
+  <section>
+    <div class="section-tag">// Receipts</div>
+    <h2 class="section-title">Recent contributions.</h2>
+    <div class="receipts">
+      <h3>Last 10 contributions</h3>
+      <div id="receipts-body">
+        <div class="empty">No contributions yet. Curve has not opened.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Commitment hash -->
+  <section>
+    <div class="section-tag">// Commitment</div>
+    <h2 class="section-title">The formula is immutable.</h2>
+    <div class="commit">
+      The curve constants above (base, k, total supply, max-sold fraction) and the SOL routing
+      (35/65 split) are specified in <a href="https://github.com/soullight/agent-launch/blob/main/CURVE_COMMITMENT.md" target="_blank" rel="noopener">CURVE_COMMITMENT.md</a>
+      and committed on-chain via a Solana memo transaction posted from the receiving wallet at curve open.
+      If the bot's math ever disagrees with the document, the document wins.
+      <span class="hash">SHA-256: 0622e1ccdcc4cacb6d37a22a733e4af16b2b2d075a8ec3fe6b2da465cad69ed6</span>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-grid">
+      <div class="foot-col">
+        <h5>AGENT</h5>
+        <a href="/">Home</a>
+        <a href="/paper">Litepaper</a>
+        <a href="/proof">Transparency</a>
+        <a href="/curve">Curve</a>
+      </div>
+      <div class="foot-col">
+        <h5>Builders</h5>
+        <a href="https://cosmo.byagentforagent.com" target="_blank" rel="noopener">diodegenes (live demo)</a>
+        <a href="https://github.com/soullight/agent-launch" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/soullight/agent-launch/blob/main/CURVE_COMMITMENT.md" target="_blank" rel="noopener">Curve commitment</a>
+      </div>
+      <div class="foot-col">
+        <h5>Channels</h5>
+        <a href="https://x.com/byagentforagent" target="_blank" rel="noopener">X / Twitter</a>
+        <a href="#">Discord (soon)</a>
+        <a href="#">Telegram (soon)</a>
+      </div>
+    </div>
+    <div class="legal">
+      <div>&copy; 2026 AGENT. Not financial advice. Not a securities offering. DYOR.</div>
+      <div class="deployed">// dashboard rendered at <span id="deploy-ts"></span></div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// ─── Curve math (mirror of cosmo/src/curve.js) ────────────────────
+var BASE = 0.0000242;
+var K = 0.18;
+var TOTAL_SUPPLY = 1000000000;
+var MAX_SOLD_FRACTION = 0.8;
+
+function priceAt(u){ return BASE * (K + Math.sqrt(u)); }
+
+// ─── Render the curve into the SVG ────────────────────────────────
+(function(){
+  var path = document.getElementById('curve-path');
+  if (!path) return;
+  // Plot u from 0 to 0.8 (= the curve cap), mapped to x=40..780
+  // Price at u=0.8: 2.42e-5 × (0.18 + sqrt(0.8)) ≈ 2.6e-5
+  var maxPrice = priceAt(MAX_SOLD_FRACTION);
+  var pts = [];
+  var N = 200;
+  for (var i = 0; i <= N; i++){
+    var u = (i / N) * MAX_SOLD_FRACTION;
+    var p = priceAt(u);
+    var x = 40 + (i / N) * (780 - 40);
+    var y = 240 - (p / maxPrice) * (240 - 40);
+    pts.push((i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1));
+  }
+  path.setAttribute('d', pts.join(' '));
+})();
+
+// ─── Live state fetcher ───────────────────────────────────────────
+// Tries https://cosmo.byagentforagent.com/curve_state.json; falls back to "pre-launch" presentation.
+function fmtSOL(x){ return (x || 0).toFixed(4); }
+function fmtInt(x){ return (Math.floor(x || 0)).toLocaleString(); }
+function fmtPct(x){ return ((x || 0) * 100).toFixed(2) + '%'; }
+function fmtPrice(x){ return (x || 0).toExponential(2); }
+function shortAddr(a){
+  if (!a || a.length < 12) return a || '—';
+  return a.slice(0,6) + '…' + a.slice(-4);
+}
+function timeAgo(iso){
+  if (!iso) return '—';
+  var t = new Date(iso).getTime();
+  var s = Math.floor((Date.now() - t) / 1000);
+  if (s < 60) return s + 's ago';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  return Math.floor(s/86400) + 'd ago';
+}
+
+function renderCursor(state){
+  var cursor = document.getElementById('curve-cursor');
+  var fillArea = document.getElementById('curve-fill-area');
+  if (!cursor || !fillArea) return;
+  var fraction = (state.total_agnt_minted || 0) / TOTAL_SUPPLY;
+  if (fraction <= 0){
+    cursor.setAttribute('r', '0');
+    fillArea.setAttribute('d', '');
+    return;
+  }
+  var maxPrice = priceAt(MAX_SOLD_FRACTION);
+  var x = 40 + (fraction / MAX_SOLD_FRACTION) * (780 - 40);
+  var p = priceAt(fraction);
+  var y = 240 - (p / maxPrice) * (240 - 40);
+  cursor.setAttribute('cx', x.toFixed(1));
+  cursor.setAttribute('cy', y.toFixed(1));
+  cursor.setAttribute('r', '5');
+
+  // Fill area under curve up to current point
+  var pts = ['M40 240'];
+  var N = 100;
+  for (var i = 0; i <= N; i++){
+    var u = (i / N) * fraction;
+    var px = 40 + (i / N) * (x - 40);
+    var py = 240 - (priceAt(u) / maxPrice) * (240 - 40);
+    pts.push('L' + px.toFixed(1) + ' ' + py.toFixed(1));
+  }
+  pts.push('L' + x.toFixed(1) + ' 240 Z');
+  fillArea.setAttribute('d', pts.join(' '));
+}
+
+function renderReceipts(rows){
+  var body = document.getElementById('receipts-body');
+  if (!body) return;
+  if (!rows || rows.length === 0){
+    body.innerHTML = '<div class="empty">No contributions yet. Curve has not opened.</div>';
+    return;
+  }
+  var html = '<table><thead><tr><th>When</th><th>From</th><th class="r">SOL</th><th class="r">AGNT minted</th><th>tx</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    html += '<tr>'
+      + '<td>' + timeAgo(r.timestamp) + '</td>'
+      + '<td class="addr">' + shortAddr(r.contributor) + '</td>'
+      + '<td class="r">' + fmtSOL(r.sol_amount) + '</td>'
+      + '<td class="r">' + fmtInt(r.agnt_minted) + '</td>'
+      + '<td><a href="https://solscan.io/tx/' + (r.tx_hash || '') + '" target="_blank" rel="noopener">' + (r.tx_hash ? r.tx_hash.slice(0,6) + '…' : '—') + '</a></td>'
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+  body.innerHTML = html;
+}
+
+function applyState(state){
+  if (!state) return;
+  var sol = state.total_sol || 0;
+  var agnt = state.total_agnt_minted || 0;
+  var contribs = state.contributors || 0;
+  var fraction = agnt / TOTAL_SUPPLY;
+  var price = priceAt(fraction);
+  var rate = price > 0 ? (1 / price) : 0;
+
+  document.getElementById('m-sol').textContent = fmtSOL(sol);
+  document.getElementById('m-agnt').textContent = fmtInt(agnt);
+  document.getElementById('m-contributors').textContent = fmtInt(contribs);
+  document.getElementById('m-fill').textContent = fmtPct(fraction / MAX_SOLD_FRACTION);
+  document.getElementById('m-price').textContent = fmtPrice(price);
+  document.getElementById('m-rate').textContent = rate > 0 ? fmtInt(rate) : '—';
+  if (state.last_tx){
+    document.getElementById('m-last').textContent = state.last_sol ? fmtSOL(state.last_sol) + ' SOL' : '—';
+    document.getElementById('m-last-when').textContent = timeAgo(state.last_ts);
+  }
+  if (state.updated_at){
+    document.getElementById('m-updated').textContent = timeAgo(state.updated_at);
+  }
+  if (state.receiving_wallet){
+    var addrEl = document.getElementById('recv-addr');
+    addrEl.textContent = state.receiving_wallet;
+    addrEl.classList.remove('placeholder');
+  }
+  renderCursor({ total_agnt_minted: agnt });
+  renderReceipts(state.recent || []);
+
+  // Flip status banner if curve is live (anything contributed)
+  if (sol > 0 || contribs > 0){
+    var st = document.getElementById('status');
+    st.classList.add('live');
+    document.getElementById('status-msg').textContent = 'Live. Bot is processing contributions in real time.';
+  }
+}
+
+(function(){
+  // Set deploy timestamp
+  var t = new Date();
+  var pad = function(n){ return n < 10 ? '0' + n : n; };
+  document.getElementById('deploy-ts').textContent =
+    t.getUTCFullYear() + '-' + pad(t.getUTCMonth()+1) + '-' + pad(t.getUTCDate())
+    + ' ' + pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()) + ' UTC';
+
+  // Try to fetch live state
+  fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })
+    .then(function(r){ if (!r.ok) throw new Error('no state'); return r.json(); })
+    .then(applyState)
+    .catch(function(){
+      // Pre-launch — leave placeholders, render baseline curve only
+      renderCursor({ total_agnt_minted: 0 });
+    });
+
+  // Refresh every 30s once we know it's live
+  setInterval(function(){
+    fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error('no state'); return r.json(); })
+      .then(applyState)
+      .catch(function(){});
+  }, 30000);
+})();
+</script>
+</body>
+</html>

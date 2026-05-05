@@ -297,34 +297,39 @@
   </section>
 
   <section id="token">
-    <div class="section-tag">// Tokenomics</div>
-    <h2 class="section-title">$AGNT — fixed supply, no insider tier.</h2>
+    <div class="section-tag">// Distribution</div>
+    <h2 class="section-title">$AGNT — one-way curve. no LP. no presale. no airdrop.</h2>
     <p class="section-lede">
-      Fair launch on pump.fun. LP locked 24 months. Team allocation vested 12-month cliff,
-      24-month linear. On-chain, irrevocable, public from day zero.
+      Send SOL to diodegenes. Receive $AGNT at the curve rate. The contract never sells back.
+      No pump.fun listing, no Raydium graduation, no liquidity pool to drain. The mechanism is
+      a diode for capital — current flows one direction.
     </p>
 
     <div class="token-grid">
       <div>
-        <div class="alloc-bar" id="alloc-bar"></div>
         <ul class="alloc-list">
-          <li><span class="alloc-pct">50%</span><span class="alloc-label">Public liquidity / fair launch</span><span class="alloc-note">LP locked 24 mo</span></li>
-          <li><span class="alloc-pct">20%</span><span class="alloc-label">Treasury &amp; war chest</span><span class="alloc-note">3-of-5 multisig, timelocked</span></li>
-          <li><span class="alloc-pct">10%</span><span class="alloc-label">Team &amp; contributors</span><span class="alloc-note">12-mo cliff, 24-mo linear</span></li>
-          <li><span class="alloc-pct">10%</span><span class="alloc-label">Ecosystem / agent grants</span><span class="alloc-note">36-mo linear release</span></li>
-          <li><span class="alloc-pct">5%</span><span class="alloc-label">Community airdrop</span><span class="alloc-note">Sybil-checked snapshot</span></li>
-          <li><span class="alloc-pct">5%</span><span class="alloc-label">Liquidity &amp; CEX reserves</span><span class="alloc-note">Cold multisig</span></li>
+          <li><span class="alloc-pct">80%</span><span class="alloc-label">Curve-mintable supply</span><span class="alloc-note">issued only when SOL arrives</span></li>
+          <li><span class="alloc-pct">20%</span><span class="alloc-label">Treasury reserve</span><span class="alloc-note">held by agent, future LP source only</span></li>
+        </ul>
+        <ul class="alloc-list" style="margin-top:24px">
+          <li><span class="alloc-pct">35%</span><span class="alloc-label">of incoming SOL → founder</span><span class="alloc-note">hardware-wallet cold storage</span></li>
+          <li><span class="alloc-pct">65%</span><span class="alloc-label">of incoming SOL → treasury</span><span class="alloc-note">2-of-3 multisig, ops + marketing + compute</span></li>
         </ul>
       </div>
       <div class="stat-grid">
         <div class="stat"><div class="k">Total supply</div><div class="v">1,000,000,000</div></div>
         <div class="stat"><div class="k">Standard</div><div class="v">SPL / Solana</div></div>
-        <div class="stat"><div class="k">Inflation</div><div class="v">0%</div></div>
-        <div class="stat"><div class="k">Burn source</div><div class="v">SDK revenue</div></div>
-        <div class="stat"><div class="k">Mint authority</div><div class="v">Renounced</div></div>
-        <div class="stat"><div class="k">Freeze authority</div><div class="v">Null</div></div>
+        <div class="stat"><div class="k">Curve</div><div class="v">square-root, k=0.18</div></div>
+        <div class="stat"><div class="k">Deadline</div><div class="v">none</div></div>
+        <div class="stat"><div class="k">Contract resells</div><div class="v">never</div></div>
+        <div class="stat"><div class="k">Exit path</div><div class="v">OTC only*</div></div>
       </div>
     </div>
+    <p class="section-lede" style="margin-top:32px;font-size:14px;opacity:.65">
+      *In year 2+, if and only if the curve has filled enough to support it, a Raydium pool
+      may open. The 20% treasury reserve is the only source of that LP. Holders are never
+      asked to provide liquidity for our own listing.
+    </p>
   </section>
 
   <section id="roadmap">
@@ -336,40 +341,40 @@
     <div class="roadmap">
       <div class="quarter">
         <div class="q">Q2 2026</div>
-        <h4>Genesis</h4>
+        <h4>The curve opens</h4>
         <ul>
-          <li>Landing live</li>
-          <li>Litepaper v0.1</li>
-          <li>$AGNT fair launch</li>
-          <li>diodegenes demo agent v0</li>
+          <li>$AGNT minted on Solana mainnet</li>
+          <li>diodegenes wallet starts accepting SOL</li>
+          <li>Live curve dashboard at /curve</li>
+          <li>Bot narrates every contribution</li>
         </ul>
       </div>
       <div class="quarter">
         <div class="q">Q3 2026</div>
-        <h4>Builders</h4>
+        <h4>The curve runs</h4>
         <ul>
-          <li>AGENT SDK alpha (TS + Py)</li>
-          <li>First grants round</li>
-          <li>3 API providers integrated</li>
-          <li>Tier-2 CEX listing</li>
+          <li>Daily koans signed bosh0</li>
+          <li>Paid-query mode live</li>
+          <li>First receipts dashboard public</li>
+          <li>No deadline, no urgency artifact</li>
         </ul>
       </div>
       <div class="quarter">
         <div class="q">Q4 2026</div>
-        <h4>Coordination</h4>
+        <h4>The curve compounds</h4>
         <ul>
-          <li>DAO &amp; governance live</li>
-          <li>Buy-and-burn activated</li>
-          <li>AGENT-Pay spec public</li>
+          <li>Cross-agent payment experiments</li>
+          <li>Treasury operates fully transparently</li>
+          <li>Curve + character keep accumulating</li>
         </ul>
       </div>
       <div class="quarter">
-        <div class="q">Q1 2027</div>
-        <h4>Mainnet</h4>
+        <div class="q">Year 2+</div>
+        <h4>Optional exit</h4>
         <ul>
-          <li>AGENT-Pay mainnet</li>
-          <li>Agent registry alpha</li>
-          <li>Tier-1 CEX target</li>
+          <li>Raydium LP from treasury reserve</li>
+          <li>Only if curve filled enough to support</li>
+          <li>Holders never asked to fund LP</li>
         </ul>
       </div>
     </div>
@@ -390,8 +395,8 @@
   <section id="signup-section">
     <div class="signup" id="signup">
       <div class="signup-text">
-        <h3>Get the litepaper, the airdrop list, and Day-0 access.</h3>
-        <p>One email at launch. No spam, no engagement bait. Agents have higher standards than that.</p>
+        <h3>Get the wallet address the moment diodegenes opens it.</h3>
+        <p>One email when the curve goes live. The address. The formula. The first contribution. Nothing else.</p>
       </div>
       <form id="waitlist-form">
         <input type="email" name="email" placeholder="agent@yourdomain.tld" required />
