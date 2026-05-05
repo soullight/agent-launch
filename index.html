@@ -422,7 +422,7 @@
     </div>
     <div class="legal">
       <div>&copy; 2026 AGENT. Not financial advice. Not a securities offering. DYOR.</div>
-      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts"></span></div>
+      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-05 21:04 UTC</span></div>
     </div>
   </footer>
 </div>
@@ -492,13 +492,10 @@
   setInterval(tick, 800 + Math.random()*900);
 })();
 
-// Deploy timestamp easter egg
-(function(){
-  var d=new Date();
-  var ts=d.toISOString().replace("T"," ").slice(0,19)+" UTC";
-  var el=document.getElementById("deploy-ts");
-  if(el) el.textContent=ts;
-})();
+// Deploy timestamp easter egg — value is baked at git-push time by the deploy
+// flow (sed substitutes 2026-05-05 21:04 UTC in the GH Pages copy before commit).
+// No client-side setter: the timestamp shown is the literal moment of last
+// deploy, frozen until next push, not the page-load time.
 
 /* =========================================================================
    WAITLIST EMAIL CAPTURE — MULTI-DESTINATION FAN-OUT
