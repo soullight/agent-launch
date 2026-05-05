@@ -291,23 +291,23 @@
   <section>
     <div class="stag">// security</div>
     <h2 class="stitle">On-chain authorities &amp; security architecture</h2>
-    <p class="slede">Mint authority lives on a hardware wallet because the bot needs to mint $AGNT to contributors as SOL flows in. It is not renounced — that's a feature of the curve mechanism, not a flaw. Every mint is auditable against the published formula.</p>
+    <p class="slede">Total supply is fixed at 1,000,000,000 $AGNT and cannot be increased. Mint authority is revoked at launch in the same sitting as the initial mint — once the 1B exists, no further $AGNT can ever be created. The bot does not need mint authority because it operates on a transfer model: vault transfers AGNT to operational, operational transfers to contributors. Every transfer is auditable against the published curve formula.</p>
 
     <div class="row">
       <div class="cell">
         <h3>Token authorities</h3>
-        <div class="kv"><div class="k">Mint authority</div><div class="v">Vault hardware wallet (Ledger, cold)</div></div>
+        <div class="kv"><div class="k">Mint authority</div><div class="v"><span class="badge ok">revoked</span> at launch</div></div>
         <div class="kv"><div class="k">Freeze authority</div><div class="v"><span class="badge ok">null</span></div></div>
         <div class="kv"><div class="k">Token program</div><div class="v">SPL Token (standard, no custom logic)</div></div>
-        <div class="kv"><div class="k">Total supply</div><div class="v">1,000,000,000 (fixed at mint)</div></div>
+        <div class="kv"><div class="k">Total supply</div><div class="v">1,000,000,000 (fixed forever)</div></div>
       </div>
       <div class="cell">
         <h3>Wallet architecture</h3>
-        <div class="kv"><div class="k">Vault (mint authority)</div><div class="v">Hardware wallet, cold</div></div>
+        <div class="kv"><div class="k">Vault (curve-mintable supply)</div><div class="v">Paper wallet, cold (single-keypair)</div></div>
         <div class="kv"><div class="k">Operational (bot signing)</div><div class="v">Hot wallet, holds 24-48h of curve fulfillment supply only</div></div>
         <div class="kv"><div class="k">Receiving (incoming SOL)</div><div class="v">diodegenes wallet, public</div></div>
         <div class="kv"><div class="k">Founder draw</div><div class="v">Hardware wallet, cold</div></div>
-        <div class="kv"><div class="k">Treasury</div><div class="v">2-of-3 multisig (Squads, Trail-of-Bits audited)</div></div>
+        <div class="kv"><div class="k">Treasury</div><div class="v">2-of-3 multisig (Squads V4)</div></div>
       </div>
     </div>
   </section>
