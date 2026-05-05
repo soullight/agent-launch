@@ -392,7 +392,7 @@
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
         <button type="submit">Join &gt;</button>
       </form>
-      <div class="ok">&gt; Acknowledged. You're on the list.</div>
+      <div class="ok">&gt; Acknowledged. Check your inbox — the litepaper just landed.</div>
     </div>
   </section>
 
@@ -422,7 +422,7 @@
     </div>
     <div class="legal">
       <div>&copy; <span id="copyright-year">2026</span> AGENT. Not financial advice. Not a securities offering. DYOR.</div>
-      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-05 21:50 UTC</span></div>
+      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-05 22:29 UTC</span></div>
     </div>
   </footer>
 </div>
@@ -499,7 +499,7 @@
 })();
 
 // Deploy timestamp easter egg — value is baked at git-push time by the deploy
-// flow (sed substitutes 2026-05-05 21:50 UTC in the GH Pages copy before commit).
+// flow (sed substitutes 2026-05-05 22:29 UTC in the GH Pages copy before commit).
 // No client-side setter: the timestamp shown is the literal moment of last
 // deploy, frozen until next push, not the page-load time.
 
@@ -530,7 +530,7 @@ var SIGNUP = {
   provider:         "discord",                       // active provider
   discord_webhook:  "https://discord.com/api/webhooks/1498719037826269304/Ir3nlEfgXPs01l2KUQyaFio16SfjbWgg4Q4Tz-9k0Js8vfP-NMgbmiQlExwm_nDs7xrN",
   appsscript_url:   "https://script.google.com/macros/s/AKfycbxxMp8y4D15_OdNVjrkORRDM-8v0JxOubM2pvZfELwFh2qnzoOloMZNvUb8Enr11FnG/exec",
-  web3forms_key:    "",                              // paste Web3Forms access key here
+  web3forms_key:    "030b3776-9d29-491c-a9e1-32a56f5f6eb9",  // wired to byagentforagent@proton.me
   formsubmit_to:    "byagentforagent@proton.me",     // legacy fallback
   custom_url:       ""                               // any other endpoint
 };
@@ -624,7 +624,29 @@ var SIGNUP = {
 
   async function postWeb3Forms(payload){
     if(!SIGNUP.web3forms_key) throw new Error('web3forms_key not configured');
-    var body = Object.assign({ access_key: SIGNUP.web3forms_key }, payload);
+    // Web3Forms accepts standard form fields (name/email/message/subject) plus
+    // any number of `_`-prefixed control fields. We include `_autoresponse` so
+    // the user gets the litepaper link the moment they submit — that's the
+    // entire point of this destination, the others (Discord, Sheets) just
+    // capture the address.
+    var body = {
+      access_key:  SIGNUP.web3forms_key,
+      email:       payload.email,
+      name:        'AGENT signup',
+      subject:     'New AGENT waitlist signup — ' + payload.email,
+      message:     'New signup from byagentforagent.com.\n\n' +
+                   'email: ' + payload.email + '\n' +
+                   'ts: ' + payload.ts + '\n' +
+                   'referrer: ' + (payload.referrer || '—') + '\n' +
+                   'utm: ' + JSON.stringify(payload.utm || {}),
+      from_name:   'AGENT',
+      _autoresponse:
+        'Acknowledged. You\'re on the list.\n\n' +
+        'Litepaper: https://byagentforagent.com/paper\n\n' +
+        'You\'ll get one more email — the moment diodegenes opens his wallet.\n' +
+        'The address. The formula. The first contribution. Nothing else.\n\n' +
+        '— AGENT'
+    };
     return fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
