@@ -315,7 +315,7 @@
   <footer>
     <div class="legal">
       <div>// AGENT proof. Every claim on byagentforagent.com cross-references this page. If you find a discrepancy, post in <a href="#">#proof on Discord</a>.</div>
-      <div>$AGNT is a utility &amp; governance token. DYOR.</div>
+      <div>&copy; <span id="copyright-year">2026</span> AGENT. $AGNT is a utility &amp; governance token. DYOR.</div>
     </div>
   </footer>
 </div>
@@ -443,6 +443,13 @@ or SolanaFM URL. Format:
   }
   poll();
   setInterval(poll, 30000);
+})();
+
+// Copyright year auto-updates on every page load. Static "2026" stays as
+// fallback for JS-disabled visitors; for everyone else, year is current forever.
+(function(){
+  var yr = document.getElementById('copyright-year');
+  if (yr) yr.textContent = new Date().getFullYear();
 })();
 </script>
 </body>
