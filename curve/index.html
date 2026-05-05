@@ -84,6 +84,25 @@
   .status .label{color:var(--dim);text-transform:uppercase;letter-spacing:0.18em;font-size:11px}
   .status .msg{color:var(--fg)}
 
+  /* Live data row */
+  .livebar{
+    display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+    padding:10px 16px;margin:-20px 0 32px;
+    border:1px dashed var(--rule);border-radius:2px;
+    font-size:12px;letter-spacing:0.04em;
+  }
+  .livebar .ld{display:inline-flex;align-items:center;gap:8px}
+  .livebar .ld-k{color:var(--dim);text-transform:uppercase;letter-spacing:0.16em;font-size:10px}
+  .livebar .ld-v{color:var(--fg);font-variant-numeric:tabular-nums}
+  .livebar .ld-d{color:var(--dim);font-size:11px}
+  .livebar .ld-d.up{color:var(--green)}
+  .livebar .ld-d.down{color:var(--magenta)}
+  .livebar .ld-sep{color:var(--rule)}
+  .livebar .ld-dim .ld-v{color:var(--dim)}
+  .livebar .ok{color:var(--green)}
+  .livebar .stale{color:var(--amber)}
+  .livebar .down-state{color:var(--magenta)}
+
   /* Section heading reused */
   .section-tag{color:var(--green-dim);font-size:11px;letter-spacing:0.28em;text-transform:uppercase;margin:48px 0 8px}
   .section-title{font-family:var(--mono);font-weight:700;font-size:clamp(22px,2.6vw,32px);line-height:1.15;margin:0 0 14px}
@@ -207,6 +226,30 @@
       <span class="pip"></span>
       <span class="label">Status</span>
       <span class="msg" id="status-msg">Pre-launch — wallet opens at curve start. Formula is committed below.</span>
+    </div>
+
+    <!-- Live data row: proves page is wired to real-time sources (chain + price + bot) -->
+    <div class="livebar" id="livebar">
+      <span class="ld">
+        <span class="ld-k">SOL/USD</span>
+        <span class="ld-v" id="ld-sol-usd">—</span>
+        <span class="ld-d" id="ld-sol-chg">—</span>
+      </span>
+      <span class="ld-sep">·</span>
+      <span class="ld">
+        <span class="ld-k">Solana slot</span>
+        <span class="ld-v" id="ld-slot">—</span>
+      </span>
+      <span class="ld-sep">·</span>
+      <span class="ld">
+        <span class="ld-k">Bot</span>
+        <span class="ld-v" id="ld-bot">—</span>
+      </span>
+      <span class="ld-sep">·</span>
+      <span class="ld ld-dim">
+        <span class="ld-k">Last refresh</span>
+        <span class="ld-v" id="ld-refresh">—</span>
+      </span>
     </div>
   </section>
 
@@ -584,6 +627,97 @@ function applyState(state){
       .then(applyState)
       .catch(function(){});
   }, 30000);
+})();
+
+// ─── Live data row ────────────────────────────────────────────────
+// Three real-time signals to show the page is wired to actual sources, not
+// a static mockup. All free public endpoints, no auth, browser CORS supported.
+//   1. SOL/USD price       → Coingecko free tier, 30s refresh
+//   2. Solana mainnet slot → public RPC getSlot, 5s refresh
+//   3. Bot health          → cosmo.byagentforagent.com/api/health, 30s refresh
+// Graceful failure: if any endpoint errors, that slot shows "—" but the rest
+// keep working. Last-refresh timestamp is the most recent successful fetch.
+(function(){
+  var lastSuccess = null;
+  function setRefreshLabel(){
+    var el = document.getElementById('ld-refresh');
+    if (!el) return;
+    if (!lastSuccess) { el.textContent = '—'; return; }
+    var s = Math.floor((Date.now() - lastSuccess) / 1000);
+    el.textContent = s < 5 ? 'just now' : s + 's ago';
+  }
+  setInterval(setRefreshLabel, 1000);
+
+  function setText(id, text, cls){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    if (cls !== undefined) {
+      el.className = cls;
+    }
+  }
+
+  // 1. SOL/USD via Coingecko (no auth, browser CORS open)
+  function pollSolUsd(){
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){
+        var p = d && d.solana && d.solana.usd;
+        var chg = d && d.solana && d.solana.usd_24h_change;
+        if (typeof p === 'number'){
+          setText('ld-sol-usd', '$' + p.toFixed(2));
+          if (typeof chg === 'number') {
+            var sign = chg >= 0 ? '▲' : '▼';
+            var cls = chg >= 0 ? 'ld-d up' : 'ld-d down';
+            setText('ld-sol-chg', sign + ' ' + Math.abs(chg).toFixed(2) + '%', cls);
+          }
+          lastSuccess = Date.now();
+        }
+      })
+      .catch(function(){ /* keep last value, don't blank it */ });
+  }
+
+  // 2. Solana mainnet slot via public RPC (browser CORS open)
+  function pollSlot(){
+    fetch('https://api.mainnet-beta.solana.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getSlot' }),
+    })
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){
+        if (typeof d.result === 'number'){
+          setText('ld-slot', d.result.toLocaleString());
+          lastSuccess = Date.now();
+        }
+      })
+      .catch(function(){ /* keep last value */ });
+  }
+
+  // 3. Bot health via cosmo /api/health
+  function pollBot(){
+    fetch('https://cosmo.byagentforagent.com/api/health', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){
+        if (d && d.ok){
+          setText('ld-bot', 'online', 'ld-v ok');
+          lastSuccess = Date.now();
+        } else {
+          setText('ld-bot', 'degraded', 'ld-v stale');
+        }
+      })
+      .catch(function(){ setText('ld-bot', 'offline', 'ld-v down-state'); });
+  }
+
+  // Initial fetches
+  pollSolUsd();
+  pollSlot();
+  pollBot();
+
+  // Schedules
+  setInterval(pollSolUsd, 30000);  // 30s — Coingecko rate limit is 30/min
+  setInterval(pollSlot, 5000);     // 5s — chain heartbeat
+  setInterval(pollBot, 30000);     // 30s — bot health
 })();
 </script>
 </body>
