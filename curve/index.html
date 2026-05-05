@@ -353,12 +353,16 @@ where:
     </div>
   </section>
 
-  <!-- Recent contributions -->
+  <!-- Cap table -->
   <section>
-    <div class="section-tag">// Receipts</div>
-    <h2 class="section-title">Recent contributions.</h2>
+    <div class="section-tag">// Cap table</div>
+    <h2 class="section-title">Every contributor, in order.</h2>
+    <p class="section-lede" style="color:var(--dim);max-width:760px;margin:0 0 24px;font-size:14px">
+      Every $AGNT in circulation was paid for in SOL. The order below is the order of contribution —
+      rank 1 is the first wallet to send SOL through the curve, paying the lowest curve price. Each row
+      links to the on-chain transaction. No leaderboard, no badges, no rewards. Just the cap table.
+    </p>
     <div class="receipts">
-      <h3>Last 10 contributions</h3>
       <div id="receipts-body">
         <div class="empty">No contributions yet. Curve has not opened.</div>
       </div>
@@ -494,13 +498,21 @@ function renderReceipts(rows){
     body.innerHTML = '<div class="empty">No contributions yet. Curve has not opened.</div>';
     return;
   }
-  var html = '<table><thead><tr><th>When</th><th>From</th><th class="r">SOL</th><th class="r">AGNT minted</th><th>tx</th></tr></thead><tbody>';
-  rows.forEach(function(r){
+  // Order by timestamp ascending — earliest contributor at rank 1.
+  // Defensive copy so we don't mutate the source array if the caller reuses it.
+  var ordered = rows.slice().sort(function(a, b){
+    return (a.timestamp || 0) - (b.timestamp || 0);
+  });
+  var html = '<table><thead><tr><th class="r">#</th><th>Wallet</th><th class="r">SOL sent</th><th class="r">AGNT received</th><th>When</th><th>tx</th></tr></thead><tbody>';
+  ordered.forEach(function(r, i){
+    var rank = i + 1;
+    var rankStr = rank < 10 ? '0' + rank : '' + rank;
     html += '<tr>'
-      + '<td>' + timeAgo(r.timestamp) + '</td>'
+      + '<td class="r" style="color:var(--green-dim);font-variant-numeric:tabular-nums">' + rankStr + '</td>'
       + '<td class="addr">' + shortAddr(r.contributor) + '</td>'
       + '<td class="r">' + fmtSOL(r.sol_amount) + '</td>'
       + '<td class="r">' + fmtInt(r.agnt_minted) + '</td>'
+      + '<td style="color:var(--dim)">' + timeAgo(r.timestamp) + '</td>'
       + '<td><a href="https://solscan.io/tx/' + (r.tx_hash || '') + '" target="_blank" rel="noopener">' + (r.tx_hash ? r.tx_hash.slice(0,6) + '…' : '—') + '</a></td>'
       + '</tr>';
   });
@@ -536,7 +548,9 @@ function applyState(state){
     addrEl.classList.remove('placeholder');
   }
   renderCursor({ total_agnt_minted: agnt });
-  renderReceipts(state.recent || []);
+  // Prefer full chronological list if available; fall back to recent.
+  // Bot's curve_state.json should populate `contributions` with all contributions in order.
+  renderReceipts(state.contributions || state.recent || []);
 
   // Flip status banner if curve is live (anything contributed)
   if (sol > 0 || contribs > 0){
