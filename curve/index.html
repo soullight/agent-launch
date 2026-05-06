@@ -440,7 +440,7 @@
         <a class="send-sol-btn" id="solscan-wallet" href="#" target="_blank" rel="noopener">
           View on Solscan ↗
         </a>
-        <a class="send-sol-btn" id="solscan-mint" href="#" target="_blank" rel="noopener">
+        <a class="send-sol-btn" id="solscan-mint" href="https://solscan.io/tx/65hkWu6Kh4TPURfr7jGimTE4RT7B7746W8nxaJpay3baGPtRUCvMQsR7gvCi9eH7kq8J9tyFbxHZVfypFQHTxi2P" target="_blank" rel="noopener" title="The on-chain transaction that revoked mint authority — supply locked at 1B forever">
           Verify contract renounced ↗
         </a>
       </div>
@@ -970,12 +970,11 @@ function applyState(state){
       solscanWallet.href = 'https://solscan.io/account/' + state.receiving_wallet;
     }
   }
-  if (state.token_mint){
-    var solscanMint = document.getElementById('solscan-mint');
-    if (solscanMint) {
-      solscanMint.href = 'https://solscan.io/token/' + state.token_mint;
-    }
-  }
+  // The "Verify contract renounced" link points at the on-chain revoke-authority
+  // transaction (Step 4 of the mainnet mint sitting), not the mint account.
+  // This is hardcoded — the TX hash never changes, and clicking it shows the
+  // exact transaction where mint authority was disabled. More credible than
+  // showing the mint account's current state.
   renderCursor({ total_agnt_minted: agnt });
   // Prefer full chronological list if available; fall back to recent.
   // Bot's curve_state.json should populate `contributions` with all contributions in order.
