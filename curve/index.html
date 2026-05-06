@@ -328,10 +328,12 @@
   .send-sol-note a{color:var(--green-dim)}
   .send-sol-note a:hover{color:var(--green)}
 
-  /* Receipts table */
-  .receipts{border:1px solid var(--rule);background:var(--bg-2);border-radius:2px;overflow:hidden;margin:18px 0}
+  /* Receipts table — overflow-x:auto so the cap table scrolls horizontally
+     on narrow screens instead of clipping content. min-width on the table
+     keeps columns readable; container becomes a scroll surface on mobile. */
+  .receipts{border:1px solid var(--rule);background:var(--bg-2);border-radius:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:18px 0}
   .receipts h3{margin:0;padding:16px 22px;color:var(--fg);font-size:14px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--rule)}
-  .receipts table{width:100%;border-collapse:collapse;font-size:12px}
+  .receipts table{width:100%;min-width:560px;border-collapse:collapse;font-size:12px}
   .receipts th,.receipts td{padding:10px 22px;text-align:left;border-bottom:1px solid var(--rule)}
   .receipts th{color:var(--dim);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500}
   .receipts td.r{text-align:right;color:var(--green)}
@@ -366,7 +368,22 @@
     .metrics{grid-template-columns:1fr 1fr}
     .duo{grid-template-columns:1fr}
     .foot-grid{grid-template-columns:1fr 1fr}
-    .nav ul{display:none}
+    /* Wrap the nav rather than hiding the links — mobile users still need
+       to navigate between pages. Brand on its own row, links flow below. */
+    .nav{flex-wrap:wrap;gap:10px 16px}
+    .nav ul{flex-wrap:wrap;gap:8px 14px;font-size:12px;letter-spacing:0.08em;width:100%}
+  }
+  @media (max-width:480px){
+    .wrap{padding:16px}
+    .hero{padding:36px 0 24px}
+    h1{font-size:36px;line-height:1.05}
+    .lede{font-size:15px}
+    .metrics{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr}
+    .send-sol{padding:18px 16px}
+    .send-sol-actions{gap:8px}
+    .send-sol-btn{font-size:11px;padding:9px 12px;flex:1 1 auto}
+    .receipts h3{padding:14px 16px;font-size:12px}
   }
 </style>
 </head>

@@ -315,7 +315,19 @@
     .signup{grid-template-columns:1fr}
     .signup input{min-width:0;width:100%}
     .foot-grid{grid-template-columns:1fr 1fr}
-    .nav ul{display:none}
+    /* Wrap the nav rather than hiding the links — mobile users still need
+       to navigate. Brand on its own row, links flow below, CTA wraps too. */
+    .nav{flex-wrap:wrap;gap:10px 16px}
+    .nav ul{flex-wrap:wrap;gap:8px 14px;font-size:12px;letter-spacing:0.08em;order:2;width:100%}
+  }
+  @media (max-width:480px){
+    .wrap{padding:16px}
+    h1{font-size:42px;line-height:1.0}
+    .lede{font-size:16px}
+    .roadmap{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr}
+    .alloc-list li{grid-template-columns:50px 1fr;gap:10px}
+    .alloc-note{display:none}
   }
 </style>
 </head>
@@ -555,7 +567,7 @@
     </div>
     <div class="legal">
       <div>&copy; <span id="copyright-year">2026</span> AGENT. Not financial advice. Not a securities offering. DYOR.</div>
-      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 17:20 UTC</span></div>
+      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 18:18 UTC</span></div>
     </div>
   </footer>
 </div>
@@ -631,7 +643,7 @@
 })();
 
 // Deploy timestamp easter egg — value is baked at git-push time by the deploy
-// flow (sed substitutes 2026-05-06 17:20 UTC in the GH Pages copy before commit).
+// flow (sed substitutes 2026-05-06 18:18 UTC in the GH Pages copy before commit).
 // No client-side setter: the timestamp shown is the literal moment of last
 // deploy, frozen until next push, not the page-load time.
 

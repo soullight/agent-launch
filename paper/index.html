@@ -238,6 +238,19 @@
     h1{font-size:48px}
     h2{font-size:22px}
     .hero .sub{font-size:18px}
+    /* Nav wraps cleanly so brand and links stay accessible on phones. */
+    .nav{flex-wrap:wrap;gap:10px 16px}
+    .nav .right{flex-wrap:wrap;gap:8px 14px;font-size:11px;letter-spacing:0.08em}
+  }
+  @media(max-width:480px){
+    .wrap{padding:16px}
+    h1{font-size:36px;line-height:1.05}
+    h2{font-size:20px}
+    .hero{padding:36px 0 20px}
+    .hero .sub{font-size:16px}
+    .hero .preface{font-size:14px}
+    p, li{font-size:14px}
+    blockquote{padding:10px 14px;font-size:14px}
   }
 </style>
 </head>

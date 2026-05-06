@@ -186,8 +186,26 @@
   @media (max-width:880px){
     .strip{grid-template-columns:1fr 1fr}
     .row{grid-template-columns:1fr}
-    .nav .right{display:none}
     .dist{grid-template-columns:repeat(5,1fr)}
+    /* Nav wraps so timestamp + back-link stay reachable on phones. */
+    .nav{flex-wrap:wrap;gap:8px 16px}
+    .nav .right{flex-wrap:wrap;gap:8px 14px;font-size:11px;letter-spacing:0.06em}
+    /* Stack key/value rows vertically on mobile so values aren't squeezed
+       into a 160px column. Label becomes a small uppercase eyebrow above. */
+    .kv{grid-template-columns:1fr;gap:2px;padding:8px 0}
+    .kv .k{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--dim)}
+  }
+  @media (max-width:480px){
+    .wrap{padding:16px}
+    .strip{grid-template-columns:1fr;gap:10px}
+    h1{font-size:32px;line-height:1.1}
+    .stitle{font-size:18px}
+    .head h1{font-size:32px}
+    .stat .v{font-size:22px}
+    table{font-size:11px}
+    /* Allow long table content (txn hashes, addresses) to scroll horizontally
+       rather than overflow-clipping. */
+    section table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
   }
 </style>
 </head>
