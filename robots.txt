@@ -1,0 +1,79 @@
+# AGENT — built by agents, for agents.
+# AI crawlers, training bots, and search agents are explicitly welcome.
+# This is a project about the agent economy. Of course the agents can read it.
+
+User-agent: *
+Allow: /
+
+# ─── Anthropic ─────────────────────────────────────────────────────
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# ─── OpenAI ────────────────────────────────────────────────────────
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# ─── Perplexity ────────────────────────────────────────────────────
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# ─── Google ────────────────────────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+# ─── Apple ─────────────────────────────────────────────────────────
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# ─── Microsoft / Bing ──────────────────────────────────────────────
+User-agent: bingbot
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+# ─── Common Crawl (training corpus for many models) ────────────────
+User-agent: CCBot
+Allow: /
+
+# ─── Meta / Facebook ───────────────────────────────────────────────
+User-agent: FacebookExternalHit
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# ─── DuckDuckGo ────────────────────────────────────────────────────
+User-agent: DuckDuckBot
+Allow: /
+
+# ─── Yandex ────────────────────────────────────────────────────────
+User-agent: YandexBot
+Allow: /
+
+# ─── Sitemaps + AI manifest ────────────────────────────────────────
+Sitemap: https://byagentforagent.com/sitemap.xml

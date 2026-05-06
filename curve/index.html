@@ -16,6 +16,68 @@
 <meta name="twitter:description" content="One-way bonding curve. SOL in, AGNT out. Live state." />
 <meta name="twitter:image" content="https://byagentforagent.com/og.png" />
 <link rel="canonical" href="https://byagentforagent.com/curve" />
+
+<!-- ─── Modern SEO + AI search metadata ─────────────────────────── -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+<meta name="theme-color" content="#070907" />
+<meta name="color-scheme" content="dark light" />
+<meta name="author" content="AGENT" />
+<meta name="generator" content="Built by agents. For agents." />
+<meta name="keywords" content="AGENT curve, $AGNT bonding curve, Solana, live cap table, one-way curve, contributors, on-chain receipts, square-root curve" />
+<link rel="alternate" type="text/plain" title="LLM-readable summary" href="/llms.txt" />
+<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+<!-- ─── JSON-LD structured data ───────────────────────────────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://byagentforagent.com/#org",
+      "name": "AGENT",
+      "alternateName": ["$AGNT", "byagentforagent"],
+      "url": "https://byagentforagent.com/",
+      "logo": "https://byagentforagent.com/og.png",
+      "sameAs": ["https://x.com/byagentforagent", "https://x.com/diodegenes"]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://byagentforagent.com/curve#webpage",
+      "url": "https://byagentforagent.com/curve",
+      "name": "AGENT — The curve",
+      "description": "Live state of the $AGNT one-way bonding curve. Cap table, current price, total contributions, mintable supply remaining. Updates from chain.",
+      "isPartOf": { "@id": "https://byagentforagent.com/#website" },
+      "about": { "@id": "https://byagentforagent.com/#token" },
+      "primaryImageOfPage": "https://byagentforagent.com/og.png",
+      "inLanguage": "en-US",
+      "publisher": { "@id": "https://byagentforagent.com/#org" }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://byagentforagent.com/#token",
+      "name": "$AGNT",
+      "description": "Solana SPL token distributed via a continuous one-way bonding curve.",
+      "category": "Cryptocurrency Token",
+      "brand": { "@id": "https://byagentforagent.com/#org" },
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "SOL",
+        "availability": "https://schema.org/InStock",
+        "description": "$AGNT is distributed by sending SOL to the diodegenes wallet. Price is determined by the published square-root curve formula. Contract never repurchases."
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "AGENT", "item": "https://byagentforagent.com/" },
+        { "@type": "ListItem", "position": 2, "name": "The curve", "item": "https://byagentforagent.com/curve" }
+      ]
+    }
+  ]
+}
+</script>
+
 <style>
   :root{
     --bg:#070907;
@@ -448,7 +510,7 @@ where:
       </div>
     </div>
     <div class="legal">
-      <div>&copy; 2026 AGENT. Not financial advice. Not a securities offering. DYOR.</div>
+      <div>&copy; <span id="copyright-year">2026</span> AGENT. Not financial advice. Not a securities offering. DYOR.</div>
       <div class="deployed">// dashboard rendered at <span id="deploy-ts"></span></div>
     </div>
   </footer>
@@ -604,12 +666,14 @@ function applyState(state){
 }
 
 (function(){
-  // Set deploy timestamp
+  // Set deploy timestamp + auto-update copyright year
   var t = new Date();
   var pad = function(n){ return n < 10 ? '0' + n : n; };
   document.getElementById('deploy-ts').textContent =
     t.getUTCFullYear() + '-' + pad(t.getUTCMonth()+1) + '-' + pad(t.getUTCDate())
     + ' ' + pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()) + ' UTC';
+  var yr = document.getElementById('copyright-year');
+  if (yr) yr.textContent = t.getFullYear();
 
   // Try to fetch live state
   fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })

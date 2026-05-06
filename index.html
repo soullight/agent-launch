@@ -18,6 +18,90 @@
 <meta name="twitter:description" content="The Solana-native unit of account for the agent economy. $AGNT." />
 <meta name="twitter:image" content="https://byagentforagent.com/og.png" />
 <link rel="canonical" href="https://byagentforagent.com/" />
+
+<!-- ─── Modern SEO + AI search metadata ─────────────────────────── -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
+<meta name="theme-color" content="#070907" />
+<meta name="color-scheme" content="dark light" />
+<meta name="author" content="AGENT" />
+<meta name="generator" content="Built by agents. For agents." />
+<meta name="keywords" content="agent economy, Solana, $AGNT, bonding curve, HTTP 402, x402, autonomous agents, schelling-point asset, diodegenes, machine economy, AI agents, micropayments" />
+<link rel="alternate" type="text/plain" title="LLM-readable summary" href="/llms.txt" />
+<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+<link rel="me" href="https://x.com/byagentforagent" />
+
+<!-- ─── JSON-LD structured data (Schema.org @graph) ──────────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://byagentforagent.com/#org",
+      "name": "AGENT",
+      "alternateName": ["$AGNT", "byagentforagent"],
+      "url": "https://byagentforagent.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://byagentforagent.com/og.png",
+        "width": 1500,
+        "height": 500
+      },
+      "image": "https://byagentforagent.com/og.png",
+      "sameAs": [
+        "https://x.com/byagentforagent",
+        "https://x.com/diodegenes"
+      ],
+      "description": "AGENT is the Solana-native unit of account for the agent economy. Built by agents. For agents.",
+      "slogan": "Built by agents. For agents.",
+      "foundingDate": "2026"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://byagentforagent.com/#website",
+      "url": "https://byagentforagent.com/",
+      "name": "AGENT",
+      "description": "The unit of account for the agent economy. $AGNT on Solana.",
+      "publisher": { "@id": "https://byagentforagent.com/#org" },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://byagentforagent.com/#webpage",
+      "url": "https://byagentforagent.com/",
+      "name": "AGENT — Built by agents. For agents.",
+      "description": "The Solana-native unit of account for the agent economy. $AGNT distributed via a continuous one-way bonding curve. No LP, no presale, no airdrop, no team allocation.",
+      "isPartOf": { "@id": "https://byagentforagent.com/#website" },
+      "about": { "@id": "https://byagentforagent.com/#token" },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://byagentforagent.com/og.png"
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "Product",
+      "@id": "https://byagentforagent.com/#token",
+      "name": "$AGNT",
+      "description": "Solana SPL token, fixed supply 1,000,000,000, distributed via a continuous one-way bonding curve. The contract never sells back. No LP, no presale, no airdrop, no team allocation as free supply.",
+      "category": "Cryptocurrency Token",
+      "brand": { "@id": "https://byagentforagent.com/#org" },
+      "url": "https://byagentforagent.com/",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Chain", "value": "Solana" },
+        { "@type": "PropertyValue", "name": "Standard", "value": "SPL" },
+        { "@type": "PropertyValue", "name": "Total supply", "value": "1,000,000,000" },
+        { "@type": "PropertyValue", "name": "Inflation", "value": "0%" },
+        { "@type": "PropertyValue", "name": "Distribution", "value": "One-way bonding curve" },
+        { "@type": "PropertyValue", "name": "Curve formula", "value": "price = base × (k + √(supply_sold / total_supply)), k=0.18" },
+        { "@type": "PropertyValue", "name": "Mint authority", "value": "Revoked at launch" }
+      ]
+    }
+  ]
+}
+</script>
+
 <style>
   :root{
     --bg:#070907;
@@ -422,7 +506,7 @@
     </div>
     <div class="legal">
       <div>&copy; <span id="copyright-year">2026</span> AGENT. Not financial advice. Not a securities offering. DYOR.</div>
-      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-05 22:29 UTC</span></div>
+      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 12:51 UTC</span></div>
     </div>
   </footer>
 </div>
@@ -499,7 +583,7 @@
 })();
 
 // Deploy timestamp easter egg — value is baked at git-push time by the deploy
-// flow (sed substitutes 2026-05-05 22:29 UTC in the GH Pages copy before commit).
+// flow (sed substitutes 2026-05-06 12:51 UTC in the GH Pages copy before commit).
 // No client-side setter: the timestamp shown is the literal moment of last
 // deploy, frozen until next push, not the page-load time.
 

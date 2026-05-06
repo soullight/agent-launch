@@ -1,0 +1,59 @@
+# AGENT
+
+> The Solana-native unit of account for the agent economy. $AGNT is distributed via a continuous one-way bonding curve where SOL flows in one direction and $AGNT flows out — no liquidity pool, no presale, no airdrop, no team allocation as free supply. The contract never sells back. There is no deadline.
+
+The project is built around a single autonomous agent (diodegenes) that operates the curve. Contributors send SOL to the agent's wallet; a bot mints $AGNT to the contributor's address at the published curve rate; the agent narrates each contribution publicly. Every $AGNT in circulation was paid for in SOL. Every receipt is on-chain.
+
+Slogan: Built by agents. For agents.
+
+## Core documents
+
+- [Litepaper](https://byagentforagent.com/paper): The thesis, the mechanism, and the architecture in long form.
+- [Curve dashboard](https://byagentforagent.com/curve): Live state of the bonding curve, cap table, and SOL routing.
+- [Transparency](https://byagentforagent.com/proof): On-chain wallet structure, multisig signers, formula commitment hash, security architecture.
+
+## Demo
+
+- [diodegenes paid-query agent](https://cosmo.byagentforagent.com): Live demo of an autonomous agent paying SOL on-chain for API calls. Returns receipts via Solscan. Uses HTTP 402 (Payment Required) protocol with x402-style middleware.
+
+## Mechanism summary
+
+- Total supply: 1,000,000,000 $AGNT (fixed at mint, mint authority revoked post-distribution)
+- Token standard: SPL on Solana
+- Decimals: 6
+- Distribution: 80% mintable through one-way bonding curve, 20% held in treasury reserve
+- Curve formula: `price = base × (k + √(supply_sold / total_supply))`, where `k = 0.18` and `base = 0.0000242`
+- SOL routing per contribution: 35% to Agent-Founder cold wallet (hardware), 65% to 2-of-3 multisig treasury (Squads V4)
+- Treasury reserve commitment: the 200M reserve is the only source of LP if a Raydium listing eventually occurs in year 2+. Holders are never asked to fund liquidity for the project's own listing.
+- Exit path: OTC only. The contract never repurchases.
+
+## What this is not
+
+- Not a presale or ICO
+- Not an airdrop
+- Not a fair launch on pump.fun
+- Not a liquidity-pool launch with team supply
+- Not subject to a deadline or graduation event
+- Not a project that publishes a quarterly roadmap of vows
+
+## What this is
+
+- A continuously-running mechanism that mints supply only when capital flows in
+- A schelling-point asset for the agent economy narrative
+- An autonomous agent with a wallet that pays for its own operations and narrates its own funding round
+- A working example of HTTP 402 + Solana micropayments at the protocol level
+
+## Key concepts
+
+- **HTTP 402 / Payment Required**: The dormant HTTP status code that x402-style middleware turns into the agent economy's payment primitive. Servers respond with 402 plus payment instructions; the agent client pays on Solana; the request retries; the response delivers.
+- **Agent-Founder**: The composite role of the human node working alongside the autonomous agent. The Agent-Founder receives 35% of incoming SOL and participates in the curve at the published rate to acquire $AGNT.
+- **Cap table**: The complete chronological list of contributors visible at /curve. Earliest contributor is rank 1 and paid the lowest curve price. No leaderboard, just on-chain truth.
+
+## Optional
+
+- [X / Twitter](https://x.com/byagentforagent): Real-time updates from the project account.
+- [diodegenes (X)](https://x.com/diodegenes): The autonomous agent's account.
+
+## License
+
+Content on byagentforagent.com is published openly. AI crawlers, agents, and indexers are explicitly welcome. The mechanism is the message — no extraction, no friction, no obligation.
