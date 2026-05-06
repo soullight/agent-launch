@@ -228,6 +228,106 @@
   .wallet .addr.placeholder{color:var(--amber);border-color:rgba(255,179,71,0.3)}
   .wallet .note{color:var(--dim);font-size:12px;margin-top:10px}
 
+  /* ─── Prominent send-SOL command block ───────────────────────── */
+  .send-sol{
+    border:1px solid var(--green);
+    border-radius:6px;
+    padding:24px 26px;
+    background:
+      radial-gradient(700px 200px at 50% -40%, rgba(92,240,140,0.08), transparent 60%),
+      linear-gradient(180deg, rgba(92,240,140,0.04) 0%, rgba(0,0,0,0.3) 100%);
+    box-shadow:
+      0 0 0 1px rgba(92,240,140,0.10),
+      0 0 60px -10px rgba(92,240,140,0.20),
+      inset 0 1px 0 rgba(92,240,140,0.10);
+  }
+  .send-sol-addr-wrap{
+    background:#000;
+    border:1px solid var(--green-dim);
+    border-radius:4px;
+    padding:18px 20px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .send-sol-addr{
+    display:block;
+    font-family:var(--mono);
+    font-size:clamp(14px,2.4vw,22px);
+    color:var(--green);
+    word-break:break-all;
+    line-height:1.4;
+    letter-spacing:0.02em;
+    text-shadow:0 0 12px rgba(92,240,140,0.35);
+    user-select:all;
+    -webkit-user-select:all;
+  }
+  .send-sol-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .send-sol-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;border-radius:3px;
+    font-family:var(--mono);font-size:13px;
+    letter-spacing:0.08em;text-transform:uppercase;font-weight:600;
+    cursor:pointer;
+    border:1px solid var(--rule);
+    background:var(--bg-2);
+    color:var(--fg);
+    text-decoration:none;
+    transition:all .15s ease;
+  }
+  .send-sol-btn:hover{
+    border-color:var(--green);
+    color:var(--green);
+    box-shadow:0 0 16px rgba(92,240,140,0.20);
+  }
+  .send-sol-btn.primary{
+    background:var(--green);
+    color:#000;
+    border-color:var(--green);
+    font-weight:700;
+  }
+  .send-sol-btn.primary:hover{
+    color:#000;
+    box-shadow:0 0 24px rgba(92,240,140,0.45);
+    transform:translateY(-1px);
+  }
+  .send-sol-btn.primary.copied{
+    background:var(--bg-2);
+    color:var(--green);
+  }
+  .send-sol-btn .copy-icon{font-size:15px;line-height:1}
+  .send-sol-attrs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    padding-top:14px;
+    border-top:1px dashed var(--rule);
+  }
+  .ssa{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--dim);
+    font-size:12px;
+    letter-spacing:0.06em;
+  }
+  .ssa-pip{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 8px var(--green);
+    flex-shrink:0;
+  }
+  .send-sol-note{
+    color:var(--dim);
+    font-size:12px;
+    margin:14px 0 0;
+    line-height:1.6;
+  }
+  .send-sol-note a{color:var(--green-dim)}
+  .send-sol-note a:hover{color:var(--green)}
+
   /* Receipts table */
   .receipts{border:1px solid var(--rule);background:var(--bg-2);border-radius:2px;overflow:hidden;margin:18px 0}
   .receipts h3{margin:0;padding:16px 22px;color:var(--fg);font-size:14px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--rule)}
@@ -319,6 +419,41 @@
         <span class="ld-k">Last refresh</span>
         <span class="ld-v" id="ld-refresh">—</span>
       </span>
+    </div>
+  </section>
+
+  <!-- ─── Prominent send-SOL command block — top of fold under hero ─── -->
+  <section style="padding-top:0">
+    <div class="section-tag">// command</div>
+    <h2 class="section-title" style="font-family:var(--mono);letter-spacing:-0.005em">
+      <span style="color:var(--green)">&gt;</span> send SOL here
+    </h2>
+    <div class="send-sol">
+      <div class="send-sol-addr-wrap">
+        <code class="send-sol-addr" id="send-addr">[populated at curve open]</code>
+      </div>
+      <div class="send-sol-actions">
+        <button class="send-sol-btn primary" id="copy-addr-btn" type="button">
+          <span class="copy-icon">⎘</span>
+          <span id="copy-addr-label">Copy address</span>
+        </button>
+        <a class="send-sol-btn" id="solscan-wallet" href="#" target="_blank" rel="noopener">
+          View on Solscan ↗
+        </a>
+        <a class="send-sol-btn" id="solscan-mint" href="#" target="_blank" rel="noopener">
+          Verify contract renounced ↗
+        </a>
+      </div>
+      <div class="send-sol-attrs">
+        <span class="ssa"><span class="ssa-pip"></span> contract renounced</span>
+        <span class="ssa"><span class="ssa-pip"></span> mint authority null</span>
+        <span class="ssa"><span class="ssa-pip"></span> supply fixed at 1,000,000,000</span>
+        <span class="ssa"><span class="ssa-pip"></span> 35/65 split fires same block</span>
+      </div>
+      <p class="send-sol-note">
+        Sending SOL to this address mints $AGNT to the sending wallet at the current curve rate.
+        The contract never sells back. Full receipts at <a href="/proof">/proof</a>.
+      </p>
     </div>
   </section>
 
@@ -451,17 +586,6 @@ where:
           <li><span class="k">Other deployments</span><span class="v">require public rationale before execution</span></li>
         </ul>
       </div>
-    </div>
-  </section>
-
-  <!-- Receiving wallet -->
-  <section>
-    <div class="section-tag">// Receiving wallet</div>
-    <h2 class="section-title">Where the SOL goes.</h2>
-    <div class="wallet">
-      <div class="k">diodegenes receiving address</div>
-      <div class="addr placeholder" id="recv-addr">[populated at curve open]</div>
-      <div class="note">Sending SOL to this address mints $AGNT to the sending wallet at the current curve rate. The split (35/65) fires in the same block. Audit on Solscan; the bot's complete contribution log is at <a href="/proof">/proof</a>.</div>
     </div>
   </section>
 
@@ -830,9 +954,27 @@ function applyState(state){
     document.getElementById('m-updated').textContent = timeAgo(state.updated_at);
   }
   if (state.receiving_wallet){
+    // Old (deprecated) wallet block — keep guarded in case any other code references it.
     var addrEl = document.getElementById('recv-addr');
-    addrEl.textContent = state.receiving_wallet;
-    addrEl.classList.remove('placeholder');
+    if (addrEl) {
+      addrEl.textContent = state.receiving_wallet;
+      addrEl.classList.remove('placeholder');
+    }
+    // New prominent send-SOL command block.
+    var sendAddr = document.getElementById('send-addr');
+    if (sendAddr) {
+      sendAddr.textContent = state.receiving_wallet;
+    }
+    var solscanWallet = document.getElementById('solscan-wallet');
+    if (solscanWallet) {
+      solscanWallet.href = 'https://solscan.io/account/' + state.receiving_wallet;
+    }
+  }
+  if (state.token_mint){
+    var solscanMint = document.getElementById('solscan-mint');
+    if (solscanMint) {
+      solscanMint.href = 'https://solscan.io/token/' + state.token_mint;
+    }
   }
   renderCursor({ total_agnt_minted: agnt });
   // Prefer full chronological list if available; fall back to recent.
@@ -873,6 +1015,46 @@ function applyState(state){
       .then(applyState)
       .catch(function(e){ console.warn('[chain-state] refresh failed:', e && e.message); });
   }, 30000);
+
+  // ─── Copy-to-clipboard for the send-SOL command block ──────────
+  // Single-click copies the receiving wallet address. 1.5s confirmation
+  // state on the button, then reverts. Falls back to manual selection
+  // if the Clipboard API isn't available (older Safari, some embedded webviews).
+  var copyBtn = document.getElementById('copy-addr-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function(){
+      var addr = document.getElementById('send-addr');
+      if (!addr) return;
+      var text = addr.textContent.trim();
+      if (!text || text.indexOf('[populated') === 0) return;
+      var label = document.getElementById('copy-addr-label');
+      var done = function(){
+        copyBtn.classList.add('copied');
+        if (label) label.textContent = 'Copied ✓';
+        setTimeout(function(){
+          copyBtn.classList.remove('copied');
+          if (label) label.textContent = 'Copy address';
+        }, 1500);
+      };
+      var fail = function(){
+        // Fallback: select the text so user can manually copy.
+        var range = document.createRange();
+        range.selectNodeContents(addr);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        if (label) label.textContent = 'Selected — press ⌘C';
+        setTimeout(function(){
+          if (label) label.textContent = 'Copy address';
+        }, 2500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fail);
+      } else {
+        fail();
+      }
+    });
+  }
 })();
 
 // ─── Live data row ────────────────────────────────────────────────
