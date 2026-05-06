@@ -526,6 +526,167 @@ var MAX_SOLD_FRACTION = 0.8;
 
 function priceAt(u){ return BASE * (K + Math.sqrt(u)); }
 
+// Cumulative SOL collected when supply_sold = U. Mirrors cosmo/src/curve.js.
+function totalSolAt(U){
+  if (U <= 0) return 0;
+  if (U > MAX_SOLD_FRACTION) U = MAX_SOLD_FRACTION;
+  return TOTAL_SUPPLY * BASE * (K * U + (2/3) * Math.pow(U, 1.5));
+}
+
+// Given a SOL contribution at the current state, how many AGNT does it buy?
+// Binary-search invert (closed-form messy with the √).
+function tokensForSol(solAmount, currentSupplySold){
+  var currentU = currentSupplySold / TOTAL_SUPPLY;
+  if (currentU >= MAX_SOLD_FRACTION){
+    return { tokensMinted: 0, newSupplySold: currentSupplySold };
+  }
+  var targetTotal = totalSolAt(currentU) + solAmount;
+  var low = currentU, high = MAX_SOLD_FRACTION;
+  var nextU = (low + high) / 2;
+  for (var i = 0; i < 80; i++){
+    var integral = totalSolAt(nextU);
+    if (Math.abs(integral - targetTotal) < 1e-9) break;
+    if (integral < targetTotal) low = nextU; else high = nextU;
+    nextU = (low + high) / 2;
+  }
+  var cappedU = Math.min(nextU, MAX_SOLD_FRACTION);
+  return {
+    tokensMinted: (cappedU - currentU) * TOTAL_SUPPLY,
+    newSupplySold: cappedU * TOTAL_SUPPLY,
+  };
+}
+
+// ─── Chain-direct state builder ───────────────────────────────────
+// The cap table, supply state, and contribution list are derived live from
+// on-chain data — Solana mainnet RPC. No dependency on Railway/Nevada sync.
+// Filter: System-program transfers TO the receiving wallet, source NOT in
+// EXCLUDED_WALLETS (Vault/Founder/Treasury/self), lamports >= dust threshold.
+// Curve math is simulated chronologically to compute agnt_minted per row.
+var CHAIN_RPC = 'https://api.mainnet-beta.solana.com';
+var RECEIVING_WALLET = '7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3';
+var VAULT_WALLET     = 'CoPEL3agTFbizRHfHvwHiRdS9aRdDnuRVR79oSftGZf7';
+var TREASURY_WALLET  = 'J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH';
+var FOUNDER_WALLET   = 'Aj3d1vSrgv7feDa41m4wSoi7uMrqtgxVG3VmEjvu4r4Q';
+var VAULT_ATA        = '37CgnYFMd39oiAjEixWVFFJhBCWVUdxENnY3DSFNf6Ke';
+var TREASURY_ATA     = 'BnSnoc1BqBPezn7A1TFaEL3SACAeFTG3Ssg3cqhY8DVu';
+var SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';
+var DUST_THRESHOLD_LAMPORTS = 100000; // 0.0001 SOL — filters dusting attacks
+var EXCLUDED_WALLETS = {};
+EXCLUDED_WALLETS[VAULT_WALLET] = 1;
+EXCLUDED_WALLETS[FOUNDER_WALLET] = 1;
+EXCLUDED_WALLETS[TREASURY_WALLET] = 1;
+EXCLUDED_WALLETS[RECEIVING_WALLET] = 1;
+
+function rpcCall(method, params){
+  return fetch(CHAIN_RPC, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc:'2.0', id:1, method: method, params: params }),
+  }).then(function(r){ return r.json(); }).then(function(d){ return d.result; });
+}
+
+async function buildChainState(){
+  // 1. Get all signatures touching the receiving wallet.
+  var sigs = await rpcCall('getSignaturesForAddress', [RECEIVING_WALLET, { limit: 1000 }]);
+  if (!sigs) sigs = [];
+
+  // 2. Batch-fetch every TX as parsed. One HTTP request, one round trip.
+  var txs = [];
+  if (sigs.length > 0){
+    var batchReq = sigs.map(function(s, i){
+      return {
+        jsonrpc: '2.0', id: i, method: 'getTransaction',
+        params: [s.signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }],
+      };
+    });
+    var batchResp = await fetch(CHAIN_RPC, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(batchReq),
+    }).then(function(r){ return r.json(); });
+    txs = Array.isArray(batchResp) ? batchResp : [];
+  }
+
+  // 3. Filter for genuine contributions: System transfer to receiving, non-internal source, above dust.
+  var contributions = [];
+  for (var ti = 0; ti < txs.length; ti++){
+    var tx = txs[ti] && txs[ti].result;
+    if (!tx || (tx.meta && tx.meta.err)) continue;
+    var ixs = (tx.transaction && tx.transaction.message && tx.transaction.message.instructions) || [];
+    for (var ii = 0; ii < ixs.length; ii++){
+      var ix = ixs[ii];
+      if (ix.programId !== SYSTEM_PROGRAM_ID) continue;
+      if (!ix.parsed || ix.parsed.type !== 'transfer') continue;
+      var info = ix.parsed.info;
+      if (info.destination !== RECEIVING_WALLET) continue;
+      if (EXCLUDED_WALLETS[info.source]) continue;
+      var lamports = parseInt(info.lamports, 10);
+      if (lamports < DUST_THRESHOLD_LAMPORTS) continue;
+      contributions.push({
+        tx_hash: tx.transaction.signatures[0],
+        contributor: info.source,
+        sol_amount: lamports / 1e9,
+        timestamp: tx.blockTime ? new Date(tx.blockTime * 1000).toISOString() : null,
+        block_time: tx.blockTime || 0,
+      });
+      break; // one match per TX
+    }
+  }
+
+  // 4. Chronological order — first contributor at index 0.
+  contributions.sort(function(a, b){ return a.block_time - b.block_time; });
+
+  // 5. Replay curve sequentially to compute agnt_minted per row.
+  var supplySold = 0;
+  for (var ci = 0; ci < contributions.length; ci++){
+    var r = tokensForSol(contributions[ci].sol_amount, supplySold);
+    contributions[ci].agnt_minted = r.tokensMinted;
+    supplySold = r.newSupplySold;
+  }
+
+  // 6. Aggregates.
+  var totalSol = 0, contribSet = {};
+  for (var k = 0; k < contributions.length; k++){
+    totalSol += contributions[k].sol_amount;
+    contribSet[contributions[k].contributor] = 1;
+  }
+  var fractionSold = supplySold / TOTAL_SUPPLY;
+  var price = priceAt(fractionSold);
+
+  // 7. On-chain balances (vault/treasury) — independent verification of supply.
+  var vaultBalP = rpcCall('getTokenAccountBalance', [VAULT_ATA]).catch(function(){ return null; });
+  var treasuryBalP = rpcCall('getTokenAccountBalance', [TREASURY_ATA]).catch(function(){ return null; });
+  var balances = await Promise.all([vaultBalP, treasuryBalP]);
+  var vault_agnt = balances[0] && balances[0].value ? parseFloat(balances[0].value.uiAmountString) : null;
+  var treasury_agnt = balances[1] && balances[1].value ? parseFloat(balances[1].value.uiAmountString) : null;
+
+  var last = contributions[contributions.length - 1];
+
+  return {
+    total_sol: totalSol,
+    total_agnt_minted: supplySold,
+    contributors: Object.keys(contribSet).length,
+    fraction_sold: fractionSold,
+    fraction_of_curve_filled: fractionSold / MAX_SOLD_FRACTION,
+    current_price_per_token: price,
+    current_tokens_per_sol: price > 0 ? 1 / price : 0,
+    sold_out: fractionSold >= MAX_SOLD_FRACTION,
+    last_tx: last ? last.tx_hash : null,
+    last_ts: last ? last.timestamp : null,
+    last_sol: last ? last.sol_amount : null,
+    vault_agnt_balance: vault_agnt,
+    treasury_agnt_balance: treasury_agnt,
+    chain_fetched_at: new Date().toISOString(),
+    contributions: contributions,
+    recent: contributions.slice().reverse().slice(0, 10),
+    receiving_wallet: RECEIVING_WALLET,
+    founder_wallet: FOUNDER_WALLET,
+    treasury_wallet: TREASURY_WALLET,
+    vault_wallet: VAULT_WALLET,
+    updated_at: new Date().toISOString(),
+  };
+}
+
 // ─── Render the curve into the SVG ────────────────────────────────
 (function(){
   var path = document.getElementById('curve-path');
@@ -675,21 +836,21 @@ function applyState(state){
   var yr = document.getElementById('copyright-year');
   if (yr) yr.textContent = t.getFullYear();
 
-  // Try to fetch live state
-  fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })
-    .then(function(r){ if (!r.ok) throw new Error('no state'); return r.json(); })
+  // Chain-direct state: every metric, the cap table, the curve cursor — all
+  // derived live from on-chain data (Solana mainnet RPC). No dependency on
+  // any centralized backend. The chain IS the source of truth.
+  buildChainState()
     .then(applyState)
-    .catch(function(){
-      // Pre-launch — leave placeholders, render baseline curve only
+    .catch(function(e){
+      console.warn('[chain-state] initial fetch failed:', e && e.message);
       renderCursor({ total_agnt_minted: 0 });
     });
 
-  // Refresh every 30s once we know it's live
+  // Refresh every 30s. Gives a steady tick without hammering public RPC.
   setInterval(function(){
-    fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })
-      .then(function(r){ if (!r.ok) throw new Error('no state'); return r.json(); })
+    buildChainState()
       .then(applyState)
-      .catch(function(){});
+      .catch(function(e){ console.warn('[chain-state] refresh failed:', e && e.message); });
   }, 30000);
 })();
 
