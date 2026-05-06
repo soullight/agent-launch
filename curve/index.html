@@ -562,7 +562,15 @@ function tokensForSol(solAmount, currentSupplySold){
 // Filter: System-program transfers TO the receiving wallet, source NOT in
 // EXCLUDED_WALLETS (Vault/Founder/Treasury/self), lamports >= dust threshold.
 // Curve math is simulated chronologically to compute agnt_minted per row.
-var CHAIN_RPC = 'https://api.mainnet-beta.solana.com';
+// Multiple endpoints — api.mainnet-beta.solana.com silently drops most txs
+// in batch responses from a single IP. Sequential requests with fallback
+// across 3 public endpoints is reliable enough to not need an API key.
+var CHAIN_RPCS = [
+  'https://api.mainnet-beta.solana.com',
+  'https://solana-rpc.publicnode.com',
+  'https://rpc.ankr.com/solana',
+];
+var CHAIN_RPC = CHAIN_RPCS[0]; // legacy alias for any single-endpoint code
 var RECEIVING_WALLET = '7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3';
 var VAULT_WALLET     = 'CoPEL3agTFbizRHfHvwHiRdS9aRdDnuRVR79oSftGZf7';
 var TREASURY_WALLET  = 'J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH';
@@ -577,12 +585,27 @@ EXCLUDED_WALLETS[FOUNDER_WALLET] = 1;
 EXCLUDED_WALLETS[TREASURY_WALLET] = 1;
 EXCLUDED_WALLETS[RECEIVING_WALLET] = 1;
 
-function rpcCall(method, params){
-  return fetch(CHAIN_RPC, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jsonrpc:'2.0', id:1, method: method, params: params }),
-  }).then(function(r){ return r.json(); }).then(function(d){ return d.result; });
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+// Fallback across multiple public RPCs. Solana mainnet-beta rate-limits
+// aggressively per-IP and silently returns empty results for batch RPC
+// requests. Sequential calls with per-endpoint fallback fix both.
+async function rpcCall(method, params){
+  var lastErr = null;
+  for (var i = 0; i < CHAIN_RPCS.length; i++){
+    try {
+      var r = await fetch(CHAIN_RPCS[i], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc:'2.0', id:1, method: method, params: params }),
+      });
+      if (!r.ok){ lastErr = new Error('http ' + r.status); continue; }
+      var j = await r.json();
+      if (j.error){ lastErr = new Error(j.error.message || 'rpc error'); continue; }
+      return j.result;
+    } catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('all RPC endpoints failed');
 }
 
 async function buildChainState(){
@@ -590,28 +613,18 @@ async function buildChainState(){
   var sigs = await rpcCall('getSignaturesForAddress', [RECEIVING_WALLET, { limit: 1000 }]);
   if (!sigs) sigs = [];
 
-  // 2. Batch-fetch every TX as parsed. One HTTP request, one round trip.
-  var txs = [];
-  if (sigs.length > 0){
-    var batchReq = sigs.map(function(s, i){
-      return {
-        jsonrpc: '2.0', id: i, method: 'getTransaction',
-        params: [s.signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }],
-      };
-    });
-    var batchResp = await fetch(CHAIN_RPC, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(batchReq),
-    }).then(function(r){ return r.json(); });
-    txs = Array.isArray(batchResp) ? batchResp : [];
-  }
-
-  // 3. Filter for genuine contributions: System transfer to receiving, non-internal source, above dust.
+  // 2. Fetch each TX SEQUENTIALLY with a small pause. Public RPC silently
+  // drops most txs in batch responses; sequential is reliable. ~1s for 20 sigs.
   var contributions = [];
-  for (var ti = 0; ti < txs.length; ti++){
-    var tx = txs[ti] && txs[ti].result;
-    if (!tx || (tx.meta && tx.meta.err)) continue;
+  for (var si = 0; si < sigs.length; si++){
+    var tx;
+    try {
+      tx = await rpcCall('getTransaction', [
+        sigs[si].signature,
+        { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }
+      ]);
+    } catch(e){ continue; }
+    if (!tx || (tx.meta && tx.meta.err)) { await sleep(40); continue; }
     var ixs = (tx.transaction && tx.transaction.message && tx.transaction.message.instructions) || [];
     for (var ii = 0; ii < ixs.length; ii++){
       var ix = ixs[ii];
@@ -631,6 +644,7 @@ async function buildChainState(){
       });
       break; // one match per TX
     }
+    await sleep(40); // gentle rate-limit pacing
   }
 
   // 4. Chronological order — first contributor at index 0.
