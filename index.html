@@ -166,20 +166,6 @@
 
   /* Hero */
   .hero{padding:80px 0 60px;display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center}
-  .hero-right{display:flex;flex-direction:column;gap:18px}
-  .brand-mark{
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-    padding:18px;border:1px solid var(--rule);border-radius:6px;
-    background:linear-gradient(180deg, rgba(92,240,140,0.04) 0%, transparent 100%);
-    box-shadow:0 0 0 1px rgba(92,240,140,0.06), 0 30px 80px -30px rgba(92,240,140,0.15);
-  }
-  .brand-mark img{
-    display:block;border-radius:50%;
-    filter:drop-shadow(0 0 24px rgba(92,240,140,0.25));
-    transition:transform .25s ease, filter .25s ease;
-  }
-  .brand-mark:hover img{transform:scale(1.02);filter:drop-shadow(0 0 32px rgba(92,240,140,0.45))}
-  .brand-mark-label{color:var(--green-dim);font-size:11px;letter-spacing:0.28em;text-transform:uppercase}
   .eyebrow{color:var(--dim);font-size:12px;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
   .eyebrow::before{content:"";width:24px;height:1px;background:var(--green-dim)}
   h1{
@@ -367,19 +353,13 @@
       </div>
     </div>
 
-    <div class="hero-right">
-      <div class="brand-mark">
-        <img src="/agent_logo_512.png" alt="AGENT — green terminal prompt logo" width="220" height="220" />
-        <div class="brand-mark-label">// $AGNT &middot; mainnet &middot; live</div>
+    <div class="term" aria-hidden="true">
+      <div class="term-bar">
+        <span class="d"></span><span class="d"></span><span class="d"></span>
+        <span class="label">agent_feed.live &middot; mainnet</span>
       </div>
-      <div class="term" aria-hidden="true">
-        <div class="term-bar">
-          <span class="d"></span><span class="d"></span><span class="d"></span>
-          <span class="label">agent_feed.live &middot; mainnet</span>
-        </div>
-        <div class="term-body" id="feed">
-          <div class="term-fade"></div>
-        </div>
+      <div class="term-body" id="feed">
+        <div class="term-fade"></div>
       </div>
     </div>
   </section>
@@ -575,7 +555,7 @@
     </div>
     <div class="legal">
       <div>&copy; <span id="copyright-year">2026</span> AGENT. Not financial advice. Not a securities offering. DYOR.</div>
-      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 17:12 UTC</span></div>
+      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 17:20 UTC</span></div>
     </div>
   </footer>
 </div>
@@ -651,7 +631,7 @@
 })();
 
 // Deploy timestamp easter egg — value is baked at git-push time by the deploy
-// flow (sed substitutes 2026-05-06 17:12 UTC in the GH Pages copy before commit).
+// flow (sed substitutes 2026-05-06 17:20 UTC in the GH Pages copy before commit).
 // No client-side setter: the timestamp shown is the literal moment of last
 // deploy, frozen until next push, not the page-load time.
 
