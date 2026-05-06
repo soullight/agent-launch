@@ -613,10 +613,14 @@ function setHref(id, href){
 function fmtSol(n){ return n == null ? '—' : n.toFixed(4) + ' SOL'; }
 function fmtInt(n){ return n == null ? '—' : Math.round(n).toLocaleString(); }
 function fmtPct(n){ return n == null ? '—' : (n * 100).toFixed(4) + '%'; }
+// Curve price formatter — shows the readable tokens-per-SOL rate primary,
+// with the underlying SOL/token cost as a precise secondary in parentheses.
+// Avoids scientific notation entirely; humans don't read "4.73e-6" naturally.
 function fmtPrice(p){
   if (p == null || p === 0) return '—';
-  if (p < 1e-4) return p.toExponential(3) + ' SOL';
-  return p.toFixed(8) + ' SOL';
+  var rate = 1 / p;
+  return Math.round(rate).toLocaleString() + ' $AGNT/SOL · '
+    + p.toFixed(8) + ' SOL/token';
 }
 function fmtAgnt(n){ return n == null ? '—' : Math.round(n).toLocaleString() + ' $AGNT'; }
 

@@ -487,14 +487,14 @@
 
     <div class="metrics" style="margin-top:14px">
       <div class="metric">
-        <div class="k">Current price / token</div>
-        <div class="v" id="m-price">—</div>
-        <div class="sub">SOL, recomputes per contribution</div>
+        <div class="k">Tokens per 1 SOL</div>
+        <div class="v" id="m-rate">—</div>
+        <div class="sub">at the current point on the curve</div>
       </div>
       <div class="metric">
-        <div class="k">Tokens per 1 SOL</div>
-        <div class="v fg" id="m-rate">—</div>
-        <div class="sub">at the current point on the curve</div>
+        <div class="k">Current price / token</div>
+        <div class="v fg" id="m-price">—</div>
+        <div class="sub">recomputes per contribution</div>
       </div>
       <div class="metric">
         <div class="k">Last contribution</div>
@@ -856,7 +856,15 @@ async function buildChainState(){
 function fmtSOL(x){ return (x || 0).toFixed(4); }
 function fmtInt(x){ return (Math.floor(x || 0)).toLocaleString(); }
 function fmtPct(x){ return ((x || 0) * 100).toFixed(2) + '%'; }
-function fmtPrice(x){ return (x || 0).toExponential(2); }
+// Format curve price for display. The number is always sub-cent (sub-1e-3 SOL),
+// so we show 8 decimal places without scientific notation — easier to read than
+// "4.73e-6" for normal humans. Trailing zeros stay; consistent column width helps
+// scan-comparison across rapid updates.
+function fmtPrice(x){
+  var n = x || 0;
+  if (n === 0) return '0';
+  return n.toFixed(8) + ' SOL';
+}
 function shortAddr(a){
   if (!a || a.length < 12) return a || '—';
   return a.slice(0,6) + '…' + a.slice(-4);
