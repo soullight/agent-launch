@@ -215,7 +215,7 @@
     <div class="stat"><div class="k">Total supply</div><div class="v">1,000,000,000</div><div class="sub">$AGNT — fixed, no inflation</div></div>
     <div class="stat"><div class="k">Curve-mintable</div><div class="v" id="m-circ">800,000,000</div><div class="sub">80% — issued only when SOL flows in</div></div>
     <div class="stat"><div class="k">Treasury reserve</div><div class="v" id="m-burn">200,000,000</div><div class="sub">20% — held by agent, future LP only</div></div>
-    <div class="stat"><div class="k">Contributors</div><div class="v" id="m-holders">[live]</div><div class="sub">every $AGNT was paid for in SOL</div></div>
+    <div class="stat"><div class="k">Contributors</div><div class="v" id="m-holders">—</div><div class="sub">every $AGNT was paid for in SOL</div></div>
   </div>
 
   <!-- ============ TREASURY ============ -->
@@ -237,8 +237,8 @@
       <div class="cell">
         <h3>Holdings <span class="badge dim">live</span></h3>
         <div class="kv"><div class="k">$AGNT reserve</div><div class="v" id="treas-agnt">200,000,000  ·  20% of supply</div></div>
-        <div class="kv"><div class="k">SOL (operational)</div><div class="v" id="treas-sol">[live]</div></div>
-        <div class="kv"><div class="k">USDC (off-ramped)</div><div class="v" id="treas-usdc">[live]</div></div>
+        <div class="kv"><div class="k">SOL (operational)</div><div class="v" id="treas-sol">—</div></div>
+        <div class="kv"><div class="k">USDC (off-ramped)</div><div class="v" id="treas-usdc">—</div></div>
         <div class="kv"><div class="k">Inflow ratio</div><div class="v">65% of every contribution</div></div>
         <div class="kv"><div class="k">Spend categories</div><div class="v">compute, marketing, infrastructure, future LP</div></div>
       </div>
@@ -254,10 +254,10 @@
     <div class="row">
       <div class="cell">
         <h3>Curve wallet <span class="badge ok">live</span></h3>
-        <div class="kv"><div class="k">Address</div><div class="v"><a id="pool-addr" href="#">[populated at curve open]</a></div></div>
-        <div class="kv"><div class="k">Total SOL contributed</div><div class="v" id="lp-tvl">[live]</div></div>
-        <div class="kv"><div class="k">Total $AGNT minted</div><div class="v" id="lp-vol">[live]</div></div>
-        <div class="kv"><div class="k">Current price</div><div class="v">[live, updates per contribution]</div></div>
+        <div class="kv"><div class="k">Address</div><div class="v"><a id="pool-addr" href="#" target="_blank" rel="noopener">[loading…]</a></div></div>
+        <div class="kv"><div class="k">Total SOL contributed</div><div class="v" id="lp-tvl">—</div></div>
+        <div class="kv"><div class="k">Total $AGNT minted</div><div class="v" id="lp-vol">—</div></div>
+        <div class="kv"><div class="k">Current price</div><div class="v" id="lp-price">—</div></div>
       </div>
       <div class="cell">
         <h3>Formula <span class="badge ok">committed</span></h3>
@@ -283,14 +283,14 @@
         <div class="kv"><div class="k">Wallet</div><div class="v"><a href="https://solscan.io/account/Aj3d1vSrgv7feDa41m4wSoi7uMrqtgxVG3VmEjvu4r4Q" target="_blank" rel="noopener">Aj3d1vSrgv7feDa41m4wSoi7uMrqtgxVG3VmEjvu4r4Q</a></div></div>
         <div class="kv"><div class="k">Storage</div><div class="v">Hardware wallet (Ledger), cold</div></div>
         <div class="kv"><div class="k">Purpose</div><div class="v">Operator compensation, off-ramped to fiat as needed</div></div>
-        <div class="kv"><div class="k">Lifetime received</div><div class="v" id="founder-received">[live]</div></div>
+        <div class="kv"><div class="k">Lifetime received</div><div class="v" id="founder-received">—</div></div>
       </div>
       <div class="cell">
         <h3>Treasury — 65% of incoming SOL</h3>
         <div class="kv"><div class="k">Wallet</div><div class="v"><a href="https://solscan.io/account/J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH" target="_blank" rel="noopener">J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH</a></div></div>
         <div class="kv"><div class="k">Storage</div><div class="v">2-of-3 multisig (Squads)</div></div>
         <div class="kv"><div class="k">Purpose</div><div class="v">Compute, marketing, infrastructure, future LP</div></div>
-        <div class="kv"><div class="k">Lifetime received</div><div class="v" id="treasury-received">[live]</div></div>
+        <div class="kv"><div class="k">Lifetime received</div><div class="v" id="treasury-received">—</div></div>
       </div>
     </div>
   </section>
@@ -354,10 +354,10 @@
       </div>
       <div class="cell">
         <h3>Live signal</h3>
-        <div class="kv"><div class="k">Total contributors</div><div class="v" id="contributors-count">[live]</div></div>
-        <div class="kv"><div class="k">Total SOL contributed</div><div class="v" id="sol-total">[live]</div></div>
-        <div class="kv"><div class="k">Total $AGNT minted</div><div class="v" id="agnt-minted">[live]</div></div>
-        <div class="kv"><div class="k">% of curve filled</div><div class="v" id="curve-fill">[live]</div></div>
+        <div class="kv"><div class="k">Total contributors</div><div class="v" id="contributors-count">—</div></div>
+        <div class="kv"><div class="k">Total SOL contributed</div><div class="v" id="sol-total">—</div></div>
+        <div class="kv"><div class="k">Total $AGNT minted</div><div class="v" id="agnt-minted">—</div></div>
+        <div class="kv"><div class="k">% of curve filled</div><div class="v" id="curve-fill">—</div></div>
         <div class="kv"><div class="k">Agent-Founder $AGNT bag</div><div class="v"><strong style="color:var(--green)">0</strong> &nbsp;<span class="badge dim">no allocation as free supply</span></div></div>
       </div>
     </div>
@@ -436,94 +436,252 @@ or SolanaFM URL. Format:
 ================================================================================
 -->
 <script>
-// Mock data + countdown helpers. Replace with live RPC calls per the dev notes above.
+// ═══════════════════════════════════════════════════════════════════
+// Chain-direct state for /proof — same approach as /curve. Reads
+// Solana mainnet RPC directly with multi-endpoint fallback. No
+// dependency on cosmo Railway sync. Page IS the receipt.
+// ═══════════════════════════════════════════════════════════════════
 
-(function setUpdated(){
-  const d = new Date();
-  document.getElementById('updated-ts').textContent =
-    d.toISOString().replace('T',' ').slice(0,16) + ' UTC';
-  // mock block height
-  const blockH = (321_400_000 + Math.floor(Math.random()*5000)).toLocaleString();
-  document.getElementById('block-h').textContent = blockH;
-})();
+// ─── Curve constants (mirror cosmo/src/curve.js) ────────────────────
+var BASE = 0.0000242;
+var K = 0.18;
+var TOTAL_SUPPLY = 1000000000;
+var MAX_SOLD_FRACTION = 0.8;
 
-// LP lock countdown: 24 months from a hardcoded TGE
-(function lockCountdown(){
-  const tge = new Date('2026-04-28T00:00:00Z');
-  const unlock = new Date(tge);
-  unlock.setMonth(unlock.getMonth() + 24);
-  const now = new Date();
-  const days = Math.max(0, Math.round((unlock - now) / (1000*60*60*24)));
-  const el = document.getElementById('unlock-cd');
-  if (el) el.textContent = 'in ' + days + ' days';
-})();
+// ─── Wallet addresses ─────────────────────────────────────────────
+var RECEIVING_WALLET = '7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3';
+var VAULT_WALLET     = 'CoPEL3agTFbizRHfHvwHiRdS9aRdDnuRVR79oSftGZf7';
+var TREASURY_WALLET  = 'J8DKiddekoJwSdRHA4Zm4muUKZMhxtPNPrbhXPmeqHhH';
+var FOUNDER_WALLET   = 'Aj3d1vSrgv7feDa41m4wSoi7uMrqtgxVG3VmEjvu4r4Q';
+var VAULT_ATA        = '37CgnYFMd39oiAjEixWVFFJhBCWVUdxENnY3DSFNf6Ke';
+var TREASURY_ATA     = 'BnSnoc1BqBPezn7A1TFaEL3SACAeFTG3Ssg3cqhY8DVu';
+var SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';
+var DUST_THRESHOLD_LAMPORTS = 100000;
+var EXCLUDED_WALLETS = {};
+EXCLUDED_WALLETS[VAULT_WALLET] = 1;
+EXCLUDED_WALLETS[FOUNDER_WALLET] = 1;
+EXCLUDED_WALLETS[TREASURY_WALLET] = 1;
+EXCLUDED_WALLETS[RECEIVING_WALLET] = 1;
 
-// Vesting "now" markers — for team (12mo cliff + 24mo linear = 36mo total)
-(function vestingNow(){
-  const tge = new Date('2026-04-28T00:00:00Z');
-  const now = new Date();
-  const monthsSince = Math.max(0, (now - tge) / (1000*60*60*24*30.4375));
-  const teamPct = Math.min(100, (monthsSince / 36) * 100);
-  const ecoPct = Math.min(100, (monthsSince / 36) * 100);
-  const teamNow = document.getElementById('team-now');
-  const ecoNow = document.getElementById('eco-now');
-  if (teamNow) teamNow.style.left = teamPct + '%';
-  if (ecoNow) ecoNow.style.left = ecoPct + '%';
+// ─── RPC fallback ─────────────────────────────────────────────────
+var CHAIN_RPCS = [
+  'https://api.mainnet-beta.solana.com',
+  'https://solana-rpc.publicnode.com',
+  'https://rpc.ankr.com/solana',
+];
 
-  // Team unlocked%: 0 if before cliff (12mo), then linear to 100% over 24mo
-  let teamUnlocked = 0;
-  if (monthsSince > 12) {
-    teamUnlocked = Math.min(100, ((monthsSince - 12) / 24) * 100);
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+async function rpcCall(method, params){
+  var lastErr = null;
+  for (var i = 0; i < CHAIN_RPCS.length; i++){
+    try {
+      var r = await fetch(CHAIN_RPCS[i], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc:'2.0', id:1, method: method, params: params }),
+      });
+      if (!r.ok){ lastErr = new Error('http ' + r.status); continue; }
+      var j = await r.json();
+      if (j.error){ lastErr = new Error(j.error.message || 'rpc error'); continue; }
+      return j.result;
+    } catch(e){ lastErr = e; }
   }
-  const tu = document.getElementById('team-unlocked');
-  if (tu) {
-    const tokens = Math.round(100_000_000 * teamUnlocked / 100);
-    tu.textContent = tokens.toLocaleString() + ' $AGNT  ·  ' + teamUnlocked.toFixed(2) + '%';
-  }
+  throw lastErr || new Error('all RPC endpoints failed');
+}
 
-  // Ecosystem disbursed: linear from 0
-  const ecoUnlocked = Math.min(100, (monthsSince / 36) * 100);
-  const eu = document.getElementById('eco-disbursed');
-  if (eu) {
-    const tokens = Math.round(100_000_000 * ecoUnlocked / 100);
-    eu.textContent = tokens.toLocaleString() + ' $AGNT  ·  ' + ecoUnlocked.toFixed(2) + '%';
+// ─── Curve math ───────────────────────────────────────────────────
+function priceAt(u){ return BASE * (K + Math.sqrt(u)); }
+function totalSolAt(U){
+  if (U <= 0) return 0;
+  if (U > MAX_SOLD_FRACTION) U = MAX_SOLD_FRACTION;
+  return TOTAL_SUPPLY * BASE * (K * U + (2/3) * Math.pow(U, 1.5));
+}
+function tokensForSol(solAmount, currentSupplySold){
+  var currentU = currentSupplySold / TOTAL_SUPPLY;
+  if (currentU >= MAX_SOLD_FRACTION){
+    return { tokensMinted: 0, newSupplySold: currentSupplySold };
   }
-})();
+  var targetTotal = totalSolAt(currentU) + solAmount;
+  var low = currentU, high = MAX_SOLD_FRACTION;
+  var nextU = (low + high) / 2;
+  for (var i = 0; i < 80; i++){
+    var integral = totalSolAt(nextU);
+    if (Math.abs(integral - targetTotal) < 1e-9) break;
+    if (integral < targetTotal) low = nextU; else high = nextU;
+    nextU = (low + high) / 2;
+  }
+  var cappedU = Math.min(nextU, MAX_SOLD_FRACTION);
+  return {
+    tokensMinted: (cappedU - currentU) * TOTAL_SUPPLY,
+    newSupplySold: cappedU * TOTAL_SUPPLY,
+  };
+}
 
-// ─── Live supply data ───────────────────────────────────────────
-// Fetches /curve_state.json from cosmo (the bot's web server) and populates
-// the supply-pool live fields. Vault balance is on-chain truth — this is the
-// number that proves curve scarcity to contributors. Cached server-side at 30s.
-(function liveSupply(){
-  function fmtAGNT(n){
-    if (n === null || n === undefined) return '[live, populated at mint]';
-    return Math.round(n).toLocaleString() + ' $AGNT';
-  }
-  function setIf(id, text){
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-  }
-  function applyState(s){
-    if (!s) return;
-    setIf('curve-remaining', fmtAGNT(s.vault_agnt_balance));
-    setIf('vault-holdings', fmtAGNT(s.vault_agnt_balance));
-    if (s.treasury_agnt_balance !== null && s.treasury_agnt_balance !== undefined) {
-      setIf('reserve-holdings', fmtAGNT(s.treasury_agnt_balance));
+// ─── Build state ──────────────────────────────────────────────────
+async function buildChainState(){
+  // 1. Signatures touching the receiving wallet.
+  var sigs = await rpcCall('getSignaturesForAddress', [RECEIVING_WALLET, { limit: 1000 }]);
+  if (!sigs) sigs = [];
+
+  // 2. Sequential TX fetch with pacing — public RPC drops batched txs.
+  var contributions = [];
+  for (var si = 0; si < sigs.length; si++){
+    var tx;
+    try {
+      tx = await rpcCall('getTransaction', [
+        sigs[si].signature,
+        { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }
+      ]);
+    } catch(e){ continue; }
+    if (!tx || (tx.meta && tx.meta.err)) { await sleep(40); continue; }
+    var ixs = (tx.transaction && tx.transaction.message && tx.transaction.message.instructions) || [];
+    for (var ii = 0; ii < ixs.length; ii++){
+      var ix = ixs[ii];
+      if (ix.programId !== SYSTEM_PROGRAM_ID) continue;
+      if (!ix.parsed || ix.parsed.type !== 'transfer') continue;
+      var info = ix.parsed.info;
+      if (info.destination !== RECEIVING_WALLET) continue;
+      if (EXCLUDED_WALLETS[info.source]) continue;
+      var lamports = parseInt(info.lamports, 10);
+      if (lamports < DUST_THRESHOLD_LAMPORTS) continue;
+      contributions.push({
+        contributor: info.source,
+        sol_amount: lamports / 1e9,
+        block_time: tx.blockTime || 0,
+      });
+      break;
     }
+    await sleep(40);
   }
-  function poll(){
-    fetch('https://cosmo.byagentforagent.com/curve_state.json', { cache: 'no-store' })
-      .then(function(r){ if (!r.ok) throw new Error('no state'); return r.json(); })
-      .then(applyState)
-      .catch(function(){ /* pre-launch: leave placeholder text */ });
-  }
-  poll();
-  setInterval(poll, 30000);
-})();
 
-// Copyright year auto-updates on every page load. Static "2026" stays as
-// fallback for JS-disabled visitors; for everyone else, year is current forever.
+  // 3. Chronological replay of curve.
+  contributions.sort(function(a,b){ return a.block_time - b.block_time; });
+  var supplySold = 0;
+  for (var ci = 0; ci < contributions.length; ci++){
+    var r = tokensForSol(contributions[ci].sol_amount, supplySold);
+    contributions[ci].agnt_minted = r.tokensMinted;
+    supplySold = r.newSupplySold;
+  }
+
+  var totalSol = 0, contribSet = {};
+  for (var k = 0; k < contributions.length; k++){
+    totalSol += contributions[k].sol_amount;
+    contribSet[contributions[k].contributor] = 1;
+  }
+  var fractionSold = supplySold / TOTAL_SUPPLY;
+  var price = priceAt(fractionSold);
+
+  // 4. On-chain balances in parallel.
+  var balRequests = [
+    rpcCall('getTokenAccountBalance', [VAULT_ATA]).catch(function(){ return null; }),
+    rpcCall('getTokenAccountBalance', [TREASURY_ATA]).catch(function(){ return null; }),
+    rpcCall('getBalance', [TREASURY_WALLET]).catch(function(){ return null; }),
+    rpcCall('getBalance', [FOUNDER_WALLET]).catch(function(){ return null; }),
+    rpcCall('getSlot', []).catch(function(){ return null; }),
+  ];
+  var bals = await Promise.all(balRequests);
+  function tokenAmt(b){ return b && b.value ? parseFloat(b.value.uiAmountString) : null; }
+  function lamportsToSol(b){ return b && b.value !== undefined ? b.value / 1e9 : (b !== null ? b / 1e9 : null); }
+
+  return {
+    total_sol: totalSol,
+    total_agnt_minted: supplySold,
+    contributors: Object.keys(contribSet).length,
+    fraction_sold: fractionSold,
+    fraction_of_curve_filled: fractionSold / MAX_SOLD_FRACTION,
+    current_price_per_token: price,
+    vault_agnt_balance: tokenAmt(bals[0]),
+    treasury_agnt_balance: tokenAmt(bals[1]),
+    treasury_sol_balance: lamportsToSol(bals[2]),
+    founder_sol_balance: lamportsToSol(bals[3]),
+    current_slot: bals[4],
+    receiving_wallet: RECEIVING_WALLET,
+    updated_at: new Date(),
+  };
+}
+
+// ─── Render helpers ────────────────────────────────────────────
+function setText(id, text){
+  var el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function setHref(id, href){
+  var el = document.getElementById(id);
+  if (el) el.href = href;
+}
+function fmtSol(n){ return n == null ? '—' : n.toFixed(4) + ' SOL'; }
+function fmtInt(n){ return n == null ? '—' : Math.round(n).toLocaleString(); }
+function fmtPct(n){ return n == null ? '—' : (n * 100).toFixed(4) + '%'; }
+function fmtPrice(p){
+  if (p == null || p === 0) return '—';
+  if (p < 1e-4) return p.toExponential(3) + ' SOL';
+  return p.toFixed(8) + ' SOL';
+}
+function fmtAgnt(n){ return n == null ? '—' : Math.round(n).toLocaleString() + ' $AGNT'; }
+
+function applyProofState(s){
+  if (!s) return;
+
+  // Curve wallet section (the user's main complaint — must be live)
+  setText('pool-addr', s.receiving_wallet);
+  setHref('pool-addr', 'https://solscan.io/account/' + s.receiving_wallet);
+  setText('lp-tvl', fmtSol(s.total_sol));
+  setText('lp-vol', fmtAgnt(s.total_agnt_minted));
+  setText('lp-price', fmtPrice(s.current_price_per_token));
+
+  // Top stats strip
+  setText('m-holders', fmtInt(s.contributors));
+
+  // SOL routing — derived from totalSol via the enforced 35/65 split
+  setText('founder-received', fmtSol(s.total_sol * 0.35));
+  setText('treasury-received', fmtSol(s.total_sol * 0.65));
+
+  // Treasury current balances (what's actually there now, post any draws)
+  setText('treas-sol', fmtSol(s.treasury_sol_balance));
+  // USDC requires a separate token-account lookup; left as em-dash for now.
+
+  // Holders / distribution section
+  setText('contributors-count', fmtInt(s.contributors));
+  setText('sol-total', fmtSol(s.total_sol));
+  setText('agnt-minted', fmtAgnt(s.total_agnt_minted));
+  setText('curve-fill', fmtPct(s.fraction_of_curve_filled));
+
+  // Supply pool — vault balance is the live "AGNT remaining in curve" number
+  if (s.vault_agnt_balance != null) {
+    setText('curve-remaining', fmtAgnt(s.vault_agnt_balance));
+    setText('vault-holdings', fmtAgnt(s.vault_agnt_balance));
+  }
+  if (s.treasury_agnt_balance != null) {
+    setText('reserve-holdings', fmtAgnt(s.treasury_agnt_balance));
+  }
+
+  // Header chrome — live block height + last-refresh timestamp
+  if (s.current_slot != null) {
+    setText('block-h', s.current_slot.toLocaleString());
+  }
+  setText('updated-ts',
+    s.updated_at.toISOString().replace('T',' ').slice(0,16) + ' UTC'
+  );
+}
+
+// ─── Page lifecycle ────────────────────────────────────────────
 (function(){
+  // First fetch immediately on load.
+  buildChainState()
+    .then(applyProofState)
+    .catch(function(e){
+      console.warn('[proof] initial chain fetch failed:', e && e.message);
+    });
+
+  // Refresh every 30 seconds. Steady tick without RPC abuse.
+  setInterval(function(){
+    buildChainState()
+      .then(applyProofState)
+      .catch(function(e){ console.warn('[proof] refresh failed:', e && e.message); });
+  }, 30000);
+
+  // Auto-updating copyright year — fallback "2026" stays for JS-disabled.
   var yr = document.getElementById('copyright-year');
   if (yr) yr.textContent = new Date().getFullYear();
 })();
