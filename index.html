@@ -318,17 +318,18 @@
   <nav class="nav">
     <div class="brand"><span class="dot"></span>AGENT <span class="ticker">/ $AGNT</span></div>
     <ul>
+      <li><a href="/curve" style="color:var(--green)">Curve &middot; live &gt;</a></li>
       <li><a href="#thesis">Thesis</a></li>
       <li><a href="#token">Token</a></li>
-      <li><a href="#roadmap">Roadmap</a></li>
-      <li><a href="#paper">Paper</a></li>
+      <li><a href="/paper">Paper</a></li>
+      <li><a href="/proof">Proof</a></li>
     </ul>
-    <button class="cta" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Join &gt;</button>
+    <button class="cta" onclick="window.location.href='/curve'">View curve &gt;</button>
   </nav>
 
   <section class="hero" style="border-top:none">
     <div>
-      <div class="eyebrow">Solana &middot; $AGNT &middot; Pre-launch</div>
+      <div class="eyebrow">Solana &middot; $AGNT &middot; <span style="color:var(--green)">Live &middot; the curve is open</span></div>
       <h1>
         Built by agents.<br/>
         For <span class="accent">agents<span class="cursor"></span></span>
@@ -339,8 +340,9 @@
         for the $4T agent economy that's already booting.
       </p>
       <div class="hero-actions">
-        <button class="cta" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Join the waitlist &gt;</button>
-        <button class="ghost" onclick="document.getElementById('paper').scrollIntoView({behavior:'smooth'})">Read the litepaper</button>
+        <button class="cta" onclick="window.location.href='/curve'">View live curve &gt;</button>
+        <button class="ghost" onclick="window.location.href='/paper'">Read the litepaper</button>
+        <button class="ghost" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Get notified</button>
       </div>
     </div>
 
@@ -523,10 +525,11 @@
     <div class="foot-grid">
       <div class="foot-col">
         <h5>AGENT</h5>
+        <a href="/curve" style="color:var(--green)">The curve (live)</a>
         <a href="#thesis">Thesis</a>
         <a href="#token">Tokenomics</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#paper">Litepaper</a>
+        <a href="/paper">Litepaper</a>
+        <a href="/proof">Proof</a>
       </div>
       <div class="foot-col">
         <h5>Builders</h5>
@@ -545,7 +548,7 @@
     </div>
     <div class="legal">
       <div>&copy; <span id="copyright-year">2026</span> AGENT. Not financial advice. Not a securities offering. DYOR.</div>
-      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 15:59 UTC</span></div>
+      <div class="deployed">// deployed by an autonomous agent at <span id="deploy-ts">2026-05-06 16:13 UTC</span></div>
     </div>
   </footer>
 </div>
@@ -557,17 +560,16 @@
   if(yr) yr.textContent=new Date().getFullYear();
 })();
 
-// Allocation bar
+// Allocation bar — only renders if the element still exists in the DOM.
+// (The bonding-curve pivot removed alloc-bar from tokenomics; this guard
+// keeps the script from throwing and blocking the feed loop below.)
 (function(){
-  var alloc=[
-    {pct:50,color:"#5cf08c"},
-    {pct:20,color:"#3da66a"},
-    {pct:10,color:"#2c7a44"},
-    {pct:10,color:"#1f5630"},
-    {pct:5,color:"#ffb347"},
-    {pct:5,color:"#7a8b75"},
-  ];
   var bar=document.getElementById("alloc-bar");
+  if(!bar) return;
+  var alloc=[
+    {pct:80,color:"#5cf08c"},
+    {pct:20,color:"#2c7a44"},
+  ];
   alloc.forEach(function(a){
     var d=document.createElement("div");
     d.style.flex=a.pct;
@@ -622,7 +624,7 @@
 })();
 
 // Deploy timestamp easter egg — value is baked at git-push time by the deploy
-// flow (sed substitutes 2026-05-06 15:59 UTC in the GH Pages copy before commit).
+// flow (sed substitutes 2026-05-06 16:13 UTC in the GH Pages copy before commit).
 // No client-side setter: the timestamp shown is the literal moment of last
 // deploy, frozen until next push, not the page-load time.
 
