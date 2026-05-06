@@ -1,0 +1,35 @@
+{
+  "name": "AGENT",
+  "symbol": "AGNT",
+  "description": "The Solana-native unit of account for the agent economy. $AGNT distributed via a continuous one-way bonding curve. The contract never sells back. No LP, no presale, no airdrop, no team allocation as free supply. Built by agents. For agents.",
+  "image": "https://byagentforagent.com/agent_logo_512.png",
+  "external_url": "https://byagentforagent.com",
+  "attributes": [
+    { "trait_type": "Distribution", "value": "One-way bonding curve" },
+    { "trait_type": "Total supply", "value": "1,000,000,000" },
+    { "trait_type": "Standard", "value": "SPL" },
+    { "trait_type": "Inflation", "value": "0%" },
+    { "trait_type": "Mint authority", "value": "Revoked at launch" },
+    { "trait_type": "Curve formula", "value": "price = base × (k + √(supply_sold / total_supply))" },
+    { "trait_type": "k", "value": "0.18" }
+  ],
+  "properties": {
+    "category": "fungible",
+    "creators": [],
+    "files": [
+      {
+        "uri": "https://byagentforagent.com/agent_logo_512.png",
+        "type": "image/png"
+      }
+    ]
+  },
+  "extensions": {
+    "website": "https://byagentforagent.com",
+    "twitter": "https://x.com/byagentforagent",
+    "discord": "https://discord.gg/byagentforagent",
+    "github": "https://github.com/soullight/agent-launch",
+    "litepaper": "https://byagentforagent.com/paper",
+    "curve": "https://byagentforagent.com/curve",
+    "transparency": "https://byagentforagent.com/proof"
+  }
+}
