@@ -128,9 +128,11 @@ def collect_contributions():
         instructions = msg.get("instructions", [])
         # find a SOL transfer where dest == receiving_wallet from a non-self source
         for ix in instructions:
-            parsed = ix.get("parsed") if isinstance(ix, dict) else None
-            if not parsed:
+            if not isinstance(ix, dict):
                 continue
+            parsed = ix.get("parsed")
+            if not isinstance(parsed, dict):
+                continue  # some parsed instructions are bare strings (memo, etc.)
             if parsed.get("type") != "transfer":
                 continue
             info = parsed.get("info", {})
