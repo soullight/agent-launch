@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "updated_at": 1779677877,
+  "receiving_wallet": "7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3",
+  "agnt_mint": "2Dgzi3jJbvt59cgiRRRECr9tHagqysGgQAV8fEjKswBJ",
+  "total_sol": 0.1,
+  "total_agnt_minted": 238862.4065,
+  "contributors": 1,
+  "fraction_sold": 0.00023886240649105423,
+  "fraction_of_curve_filled": 0.0002985780081138178,
+  "current_price_per_token": 4.730015213243286e-06,
+  "current_tokens_per_sol": 211415.81050313747,
+  "sold_out": false,
+  "vault_agnt_balance": 790090239.899872,
+  "op_agnt_balance": 9670897.693637,
+  "treasury_agnt_balance": 200000000.0,
+  "last_tx": "2jQoBicS9gPEmAT3PLy1RA8t5QdRBL5pWgjeKFoiLMA7NPjFEaLXkAFgJjSyqkijzS7Z2nXe3C2ChKwcAmtpbN7P",
+  "last_sol": 0.1,
+  "last_ts": 1778080796,
+  "contributions": [
+    {
+      "sig": "2jQoBicS9gPEmAT3PLy1RA8t5QdRBL5pWgjeKFoiLMA7NPjFEaLXkAFgJjSyqkijzS7Z2nXe3C2ChKwcAmtpbN7P",
+      "from": "2vxtyF8cY79sTMydBHnbqUQtuqdS5TbG1uiEs3iedVob",
+      "sol": 0.1,
+      "ts": 1778080796
+    }
+  ],
+  "curve": {
+    "base": 2.42e-05,
+    "k": 0.18,
+    "total_supply": 1000000000,
+    "max_sold_fraction": 0.8
+  }
+}

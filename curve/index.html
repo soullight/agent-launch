@@ -756,6 +756,17 @@ async function rpcCall(method, params){
   throw lastErr || new Error('all RPC endpoints failed');
 }
 
+// Primary path: pre-rendered state.json (same-origin, refreshed server-side
+// by GitHub Actions). Public Solana RPCs reject browser-origin signature
+// queries (mainnet-beta 403s, publicnode returns empty silently, ankr needs
+// API key) — so buildChainState below is best-effort fallback for fresh
+// cache-busted reads.
+async function fetchServerState(){
+  var r = await fetch('/state.json', { cache: 'no-store' });
+  if (!r.ok) throw new Error('state.json http '+r.status);
+  return r.json();
+}
+
 async function buildChainState(){
   // 1. Get all signatures touching the receiving wallet.
   var sigs = await rpcCall('getSignaturesForAddress', [RECEIVING_WALLET, { limit: 1000 }]);
@@ -1026,17 +1037,23 @@ function applyState(state){
   // Chain-direct state: every metric, the cap table, the curve cursor — all
   // derived live from on-chain data (Solana mainnet RPC). No dependency on
   // any centralized backend. The chain IS the source of truth.
-  buildChainState()
+  fetchServerState()
     .then(applyState)
     .catch(function(e){
-      console.warn('[chain-state] initial fetch failed:', e && e.message);
+      console.warn('[chain-state] /state.json failed, trying browser RPC:', e && e.message);
+      return buildChainState().then(applyState);
+    })
+    .catch(function(e){
+      console.warn('[chain-state] all sources failed:', e && e.message);
       renderCursor({ total_agnt_minted: 0 });
     });
 
-  // Refresh every 30s. Gives a steady tick without hammering public RPC.
+  // Refresh every 30s — prefer the pre-rendered /state.json; the browser-RPC
+  // path is unreliable (public RPCs block byagentforagent.com origin).
   setInterval(function(){
-    buildChainState()
+    fetchServerState()
       .then(applyState)
+      .catch(function(){ return buildChainState().then(applyState); })
       .catch(function(e){ console.warn('[chain-state] refresh failed:', e && e.message); });
   }, 30000);
 

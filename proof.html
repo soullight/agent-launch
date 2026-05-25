@@ -537,6 +537,15 @@ function tokensForSol(solAmount, currentSupplySold){
 }
 
 // ─── Build state ──────────────────────────────────────────────────
+// Primary path: pre-rendered state.json (same-origin, refreshed by GitHub
+// Actions). Public Solana RPCs reject browser-origin signature queries, so
+// buildChainState below is best-effort fallback only.
+async function fetchServerState(){
+  var r = await fetch('/state.json', { cache: 'no-store' });
+  if (!r.ok) throw new Error('state.json http '+r.status);
+  return r.json();
+}
+
 async function buildChainState(){
   // 1. Signatures touching the receiving wallet.
   var sigs = await rpcCall('getSignaturesForAddress', [RECEIVING_WALLET, { limit: 1000 }]);
@@ -689,17 +698,23 @@ function applyProofState(s){
 
 // ─── Page lifecycle ────────────────────────────────────────────
 (function(){
-  // First fetch immediately on load.
-  buildChainState()
+  // First fetch immediately on load — same-origin /state.json first.
+  fetchServerState()
     .then(applyProofState)
     .catch(function(e){
-      console.warn('[proof] initial chain fetch failed:', e && e.message);
+      console.warn('[proof] /state.json failed, trying browser RPC:', e && e.message);
+      return buildChainState().then(applyProofState);
+    })
+    .catch(function(e){
+      console.warn('[proof] all sources failed:', e && e.message);
     });
 
-  // Refresh every 30 seconds. Steady tick without RPC abuse.
+  // Refresh every 30s. Prefer pre-rendered state.json (reliable) over public
+  // RPC (origin-blocked).
   setInterval(function(){
-    buildChainState()
+    fetchServerState()
       .then(applyProofState)
+      .catch(function(){ return buildChainState().then(applyProofState); })
       .catch(function(e){ console.warn('[proof] refresh failed:', e && e.message); });
   }, 30000);
 

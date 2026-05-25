@@ -1,0 +1,44 @@
+name: Refresh state.json from Solana mainnet
+
+on:
+  schedule:
+    # Every 10 minutes. Pushes only happen when state actually changes,
+    # so this is cheap even on the free tier.
+    - cron: '*/10 * * * *'
+  workflow_dispatch:  # manual trigger
+  push:
+    paths:
+      - '_state/build.py'
+      - '.github/workflows/refresh-state.yml'
+
+permissions:
+  contents: write  # needed for the auto-commit step
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: refresh-state
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build state.json
+        run: |
+          STATE_OUT=./state.json python3 _state/build.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "agnt-state-bot"
+          git config user.email "bot@byagentforagent.com"
+          if git diff --quiet state.json; then
+            echo "no state changes"
+            exit 0
+          fi
+          git add state.json _state/tx_cache/ 2>/dev/null || true
+          git commit -m "refresh state.json $(date -u +%FT%TZ)"
+          git push
