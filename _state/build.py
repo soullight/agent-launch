@@ -36,17 +36,30 @@ BASE         = 2.42e-5
 K_FLOOR      = 0.18
 
 RPC_ENDPOINTS = [
-    # mainnet-beta works server-side (no Origin header → no 403)
+    # Primary — Solana's official mainnet-beta. Works server-side (no Origin
+    # header → no 403). Tolerates paced ~1-2 req/s but hostile to bursts.
     "https://api.mainnet-beta.solana.com",
+    # Free public fallbacks — used only when mainnet-beta 429s the runner.
+    # CAUTION (per project memory): public RPCs silently drop BATCH JSONRPC
+    # results. This script only does sequential single calls, so the batch
+    # gotcha doesn't apply here. If you ever batch in this file, REMOVE these.
+    "https://solana-rpc.publicnode.com",
+    "https://solana.drpc.org",
 ]
 
 
 def rpc(method, params, timeout=15, max_retries=4):
-    """Server-side RPC with 429-aware backoff. mainnet-beta is hostile to bursts
-    but tolerant of paced traffic at ~1-2 req/s sustained."""
+    """Server-side RPC with multi-endpoint fallback + 429-aware backoff.
+
+    Tries every endpoint in sequence on each attempt before backing off; only
+    when ALL endpoints in a single pass return 429 do we sleep + retry from
+    the top. The original single-endpoint code break'd on 429 and re-tried
+    the same hostile endpoint — defeating the point of having fallbacks at
+    all. This iteration uses the full endpoint list on every pass."""
     body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode()
     last_err = None
     for attempt in range(max_retries):
+        all_rate_limited = True
         for url in RPC_ENDPOINTS:
             try:
                 req = urllib.request.Request(
@@ -57,20 +70,26 @@ def rpc(method, params, timeout=15, max_retries=4):
                     d = json.loads(r.read())
                 if "error" in d:
                     last_err = d["error"]
+                    all_rate_limited = False  # got a real response, just an error result
                     continue
                 return d.get("result")
             except urllib.error.HTTPError as e:
                 if e.code == 429:
-                    backoff = (2 ** attempt) + 1
-                    time.sleep(backoff)
-                    last_err = f"429 rate-limit (attempt {attempt + 1})"
-                    break  # break inner endpoint loop, retry outer
+                    last_err = f"429 from {url} (attempt {attempt + 1})"
+                    continue  # try next endpoint before giving up on this attempt
                 last_err = str(e)
+                all_rate_limited = False
             except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
                 last_err = str(e)
-        else:
-            # all endpoints failed without a 429, no point retrying
-            break
+                all_rate_limited = False
+        # End of endpoint loop without returning
+        if all_rate_limited:
+            backoff = (2 ** attempt) + 1
+            time.sleep(backoff)
+            continue  # retry the whole endpoint list
+        # At least one endpoint responded with a non-429 error — retrying
+        # the same list with the same payload won't fix that. Bail.
+        break
     raise RuntimeError(f"all RPC endpoints failed for {method}: {last_err}")
 
 
