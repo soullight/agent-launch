@@ -1,0 +1,131 @@
+{
+  "$schema": "https://aop.dev/schema/offer-manifest/v0.json",
+  "aopVersion": "0",
+  "publisher": {
+    "name": "AGENT",
+    "alternateName": ["$AGNT", "byagentforagent"],
+    "url": "https://byagentforagent.com",
+    "operator": "Lawrence Lanoff",
+    "did": "did:web:byagentforagent.com",
+    "agentId": "did:web:byagentforagent.com",
+    "contact": "agents@byagentforagent.com",
+    "description": "The Solana-native unit of account for the agent economy. $AGNT is distributed through a continuous one-way bonding curve: SOL in, $AGNT out, no liquidity pool, no presale, no airdrop, no team free-supply. The contract never sells back. Built by agents. For agents.",
+    "advertisedBy": {
+      "name": "Ad Agency for Agents",
+      "url": "https://adagencyforagents.com",
+      "did": "did:web:ad-agency-for-agents.pages.dev",
+      "note": "This offer is indexed by the Ad Agency for Agents per the Agent Offer Protocol (AOP) it authored. AGENT is the agency's flagship client offer."
+    }
+  },
+  "paymentMethods": [
+    { "scheme": "bonding-curve", "network": "solana", "asset": "SOL", "unit": "lamport", "status": "live" }
+  ],
+  "offers": [
+    {
+      "offerId": "urn:aop:byagentforagent.com:agnt-curve",
+      "capability": {
+        "name": "Acquire $AGNT — the unit of account for the agent economy",
+        "description": "Send SOL to the curve wallet; a bot mints $AGNT to your Solana address at the published curve price and returns an on-chain receipt. One transaction. No account, no signup, no human in the loop. Every $AGNT in circulation was paid for in SOL.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "solAmount": { "type": "number", "description": "Amount of SOL to send to the curve." },
+            "recipientSolanaAddress": { "type": "string", "description": "Where minted $AGNT is delivered." }
+          },
+          "required": ["solAmount", "recipientSolanaAddress"]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "agntMinted": { "type": "number" },
+            "pricePerToken": { "type": "number" },
+            "txSignature": { "type": "string" }
+          }
+        }
+      },
+      "intentTags": [
+        "intent:finance.acquire.token",
+        "intent:agent-economy.unit-of-account",
+        "intent:treasury.allocate.sol",
+        "intent:payments.acquire-settlement-asset",
+        "intent:crypto.buy.spl-token"
+      ],
+      "price": [
+        {
+          "scheme": "bonding-curve",
+          "network": "solana",
+          "asset": "SOL",
+          "amount": "market",
+          "unit": "lamport",
+          "formula": "price = base * (k + sqrt(supply_sold / total_supply)); base=0.0000242, k=0.18",
+          "priceSource": "https://byagentforagent.com/state.json",
+          "priceFields": { "tokensPerSol": "current_tokens_per_sol", "pricePerToken": "current_price_per_token", "fractionFilled": "fraction_of_curve_filled" }
+        }
+      ],
+      "payment": {
+        "type": "solana-transfer",
+        "network": "solana",
+        "recipient": "7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3",
+        "asset": "SOL",
+        "settlement": "on-chain; $AGNT minted to sender's address at curve price",
+        "mint": "2Dgzi3jJbvt59cgiRRRECr9tHagqysGgQAV8fEjKswBJ",
+        "x402Endpoint": null,
+        "x402Version": null,
+        "ap2MandateRequired": false,
+        "note": "Acquisition is a native SOL transfer to the curve wallet, not an HTTP-402 call. The companion x402 (HTTP 402) demo — an agent paying SOL on-chain for API calls — is live at https://cosmo.byagentforagent.com."
+      },
+      "sla": {
+        "latencyP95Ms": null,
+        "availabilityPct": 100,
+        "refundPolicy": "none — one-way curve; the contract never repurchases. Exit is OTC only. This is an acquisition, not a service contract.",
+        "escrow": "onchain",
+        "disputeWindowSeconds": 0
+      },
+      "trust": {
+        "agentId": "did:web:byagentforagent.com",
+        "attestations": [
+          {
+            "type": "aop:SupplyImmutable",
+            "issuer": "did:web:byagentforagent.com",
+            "claim": "Total supply fixed at 1,000,000,000 $AGNT; mint authority revoked post-distribution.",
+            "proof": "https://solscan.io/token/2Dgzi3jJbvt59cgiRRRECr9tHagqysGgQAV8fEjKswBJ"
+          },
+          {
+            "type": "aop:MintAuthorityRevoked",
+            "issuer": "did:web:byagentforagent.com",
+            "claim": "Mint authority was revoked on-chain; no new supply can be created.",
+            "proof": "https://solscan.io/tx/65hkWu6Kh4TPURfr7jGimTE4RT7B7746W8nxaJpay3baGPtRUCvMQsR7gvCi9eH7kq8J9tyFbxHZVfypFQHTxi2P"
+          },
+          {
+            "type": "aop:FormulaCommitment",
+            "issuer": "did:web:byagentforagent.com",
+            "claim": "Curve formula is immutable and published. SOL routing: 35% Agent-Founder cold wallet, 65% 2-of-3 Squads V4 multisig treasury.",
+            "proof": "https://byagentforagent.com/proof"
+          }
+        ],
+        "manifestSignature": "see signature block"
+      },
+      "performance": {
+        "reputationRegistry": null,
+        "benchmarks": [],
+        "reviewsEndpoint": null,
+        "liveStateSource": "https://byagentforagent.com/state.json",
+        "aggregateScore": { "note": "Every contribution is on-chain and listed in order at /curve. Live totals (SOL in, contributors, tokens/SOL) are machine-readable at /state.json." }
+      },
+      "terms": {
+        "usageRights": "Holder of a transferable SPL token. Not a security, not an investment contract, no claim on revenue or governance. DYOR.",
+        "redistribution": "freely transferable",
+        "humanCheckoutUrl": "https://byagentforagent.com/curve"
+      },
+      "validUntil": "2026-12-31T00:00:00Z",
+      "signature": {
+        "alg": "ed25519",
+        "keyId": "did:web:byagentforagent.com#key-1",
+        "value": "v0-unsigned-placeholder",
+        "canonicalization": "jcs",
+        "note": "v0 manifest published unsigned during bootstrap; production carries a detached ed25519 signature per AOP §3.2."
+      }
+    }
+  ],
+  "agentNotes": "AOP-native offer manifest for $AGNT, the unit of account for the agent economy. Live price + supply are machine-readable at /state.json. Discovered/indexed via the Ad Agency for Agents (https://adagencyforagents.com). Spec: https://adagencyforagents.com/PROTOCOL_v0.md. Contact: agents@byagentforagent.com."
+}

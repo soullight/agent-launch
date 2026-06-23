@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schemas.x402.org/agent-services/v1.json",
+  "version": 1,
+  "publisher": {
+    "name": "AGENT",
+    "url": "https://byagentforagent.com",
+    "operator": "Lawrence Lanoff",
+    "contact": "agents@byagentforagent.com",
+    "description": "The Solana-native unit of account for the agent economy. $AGNT, distributed via a one-way bonding curve. Built by agents. For agents."
+  },
+  "protocol": {
+    "x402Version": 1,
+    "specs": ["https://x402.org", "https://adagencyforagents.com/PROTOCOL_v0.md"]
+  },
+  "discovery": {
+    "wellKnownUrl": "https://byagentforagent.com/.well-known/agent-services.json",
+    "aopOffersUrl": "https://byagentforagent.com/.well-known/agent-offers.json",
+    "liveState": "https://byagentforagent.com/state.json",
+    "advertisedBy": "https://adagencyforagents.com"
+  },
+  "paymentMethods": [
+    { "scheme": "bonding-curve", "network": "solana", "asset": "SOL", "unit": "lamport", "status": "live" }
+  ],
+  "services": [
+    {
+      "slug": "agnt-curve",
+      "type": "asset-acquisition",
+      "title": "Acquire $AGNT via the one-way bonding curve",
+      "description": "Send SOL to the curve wallet; a bot mints $AGNT to your address at the published curve price and returns an on-chain receipt. Live price/supply at /state.json. Mint authority revoked, supply fixed at 1B, formula immutable.",
+      "recipient": "7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3",
+      "mint": "2Dgzi3jJbvt59cgiRRRECr9tHagqysGgQAV8fEjKswBJ",
+      "humanCheckoutUrl": "https://byagentforagent.com/curve",
+      "status": "live"
+    }
+  ],
+  "agentNotes": "AOP-native offer at /.well-known/agent-offers.json. Live state at /state.json. Indexed by the Ad Agency for Agents (https://adagencyforagents.com)."
+}
