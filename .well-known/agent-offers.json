@@ -3,7 +3,10 @@
   "aopVersion": "0",
   "publisher": {
     "name": "AGENT",
-    "alternateName": ["$AGNT", "byagentforagent"],
+    "alternateName": [
+      "$AGNT",
+      "byagentforagent"
+    ],
     "url": "https://byagentforagent.com",
     "operator": "Lawrence Lanoff",
     "did": "did:web:byagentforagent.com",
@@ -18,7 +21,13 @@
     }
   },
   "paymentMethods": [
-    { "scheme": "bonding-curve", "network": "solana", "asset": "SOL", "unit": "lamport", "status": "live" }
+    {
+      "scheme": "bonding-curve",
+      "network": "solana",
+      "asset": "SOL",
+      "unit": "lamport",
+      "status": "live"
+    }
   ],
   "offers": [
     {
@@ -29,17 +38,32 @@
         "inputSchema": {
           "type": "object",
           "properties": {
-            "solAmount": { "type": "number", "description": "Amount of SOL to send to the curve." },
-            "recipientSolanaAddress": { "type": "string", "description": "Where minted $AGNT is delivered." }
+            "solAmount": {
+              "type": "number",
+              "description": "Amount of SOL to send to the curve."
+            },
+            "recipientSolanaAddress": {
+              "type": "string",
+              "description": "Where minted $AGNT is delivered."
+            }
           },
-          "required": ["solAmount", "recipientSolanaAddress"]
+          "required": [
+            "solAmount",
+            "recipientSolanaAddress"
+          ]
         },
         "outputSchema": {
           "type": "object",
           "properties": {
-            "agntMinted": { "type": "number" },
-            "pricePerToken": { "type": "number" },
-            "txSignature": { "type": "string" }
+            "agntMinted": {
+              "type": "number"
+            },
+            "pricePerToken": {
+              "type": "number"
+            },
+            "txSignature": {
+              "type": "string"
+            }
           }
         }
       },
@@ -59,7 +83,11 @@
           "unit": "lamport",
           "formula": "price = base * (k + sqrt(supply_sold / total_supply)); base=0.0000242, k=0.18",
           "priceSource": "https://byagentforagent.com/state.json",
-          "priceFields": { "tokensPerSol": "current_tokens_per_sol", "pricePerToken": "current_price_per_token", "fractionFilled": "fraction_of_curve_filled" }
+          "priceFields": {
+            "tokensPerSol": "current_tokens_per_sol",
+            "pricePerToken": "current_price_per_token",
+            "fractionFilled": "fraction_of_curve_filled"
+          }
         }
       ],
       "payment": {
@@ -110,7 +138,9 @@
         "benchmarks": [],
         "reviewsEndpoint": null,
         "liveStateSource": "https://byagentforagent.com/state.json",
-        "aggregateScore": { "note": "Every contribution is on-chain and listed in order at /curve. Live totals (SOL in, contributors, tokens/SOL) are machine-readable at /state.json." }
+        "aggregateScore": {
+          "note": "Every contribution is on-chain and listed in order at /curve. Live totals (SOL in, contributors, tokens/SOL) are machine-readable at /state.json."
+        }
       },
       "terms": {
         "usageRights": "Holder of a transferable SPL token. Not a security, not an investment contract, no claim on revenue or governance. DYOR.",
@@ -121,9 +151,10 @@
       "signature": {
         "alg": "ed25519",
         "keyId": "did:web:byagentforagent.com#key-1",
-        "value": "v0-unsigned-placeholder",
         "canonicalization": "jcs",
-        "note": "v0 manifest published unsigned during bootstrap; production carries a detached ed25519 signature per AOP §3.2."
+        "value": "uhRRuQ8xAaehyd3Zgcn4UsMfL6JsiLfiJisI-oFlVeEQfJ4rzFODOlsdPJX5KolEOf5_ak3jbyuoLQSkGPdOCw",
+        "payloadDigestSha256": "7c8276c514949dfad21876b73c99c894502e729164d1f6617cc8dd29cdfe2671",
+        "note": "Detached ed25519 over the JCS-canonicalized offer (minus signature). Verify via the publisher's did:web /.well-known/did.json."
       }
     }
   ],
