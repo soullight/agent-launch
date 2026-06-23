@@ -358,11 +358,56 @@
         <strong>Agents pay with capital.</strong> AGENT is the Solana-native unit of account
         for the $4T agent economy that's already booting.
       </p>
-      <div class="hero-actions">
-        <button class="cta" onclick="window.location.href='/curve'">View live curve &gt;</button>
-        <button class="ghost" onclick="window.location.href='/paper'">Read the litepaper</button>
-        <button class="ghost" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Get notified</button>
+      <style>
+        .buybox{margin-top:22px;border:1px solid var(--green-dim);border-radius:12px;background:linear-gradient(180deg,rgba(92,240,140,0.05),rgba(13,17,13,0.6));padding:18px}
+        .buybox-stats{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--muted);margin-bottom:14px}
+        .buybox-stats b{color:var(--green);font-size:18px;margin-right:5px}
+        .buybox-label{font-size:14px;color:var(--fg);margin-bottom:12px;line-height:1.5}
+        .buybox-addr{display:flex;gap:8px;align-items:stretch;margin-bottom:12px;flex-wrap:wrap}
+        .buybox-addr code{flex:1;min-width:200px;background:#05080a;border:1px solid var(--green-dim);border-radius:8px;padding:11px 12px;color:var(--green);font-size:13px;overflow-wrap:anywhere;display:flex;align-items:center}
+        .buybox .hero-actions{margin-top:0}
+        .buybox-trust{margin-top:13px;font-size:12px;color:var(--muted);line-height:1.5}
+        #buy-copy.copied{background:var(--green);color:#000}
+      </style>
+      <div class="buybox">
+        <div class="buybox-stats" id="buy-stats">
+          <span><b id="bs-sol">1.1</b>SOL in</span>
+          <span><b id="bs-contrib">2</b>contributors</span>
+          <span><b id="bs-rate">211,416</b>$AGNT / SOL</span>
+        </div>
+        <div class="buybox-label"><span style="color:var(--green)">&gt;</span> Send SOL to the curve, get $AGNT at the current price. One-way curve — no presale, no LP, no airdrop.</div>
+        <div class="buybox-addr">
+          <code id="buy-addr">7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3</code>
+          <button class="cta" id="buy-copy" type="button">Copy address</button>
+        </div>
+        <div class="hero-actions">
+          <a class="cta" id="buy-wallet" href="solana:7qzwEWW3XiLyg5A9AbUpHSHvcvNzP56Pm21iuyuqY2m3?label=AGENT%20curve">Open in wallet &rarr;</a>
+          <button class="ghost" onclick="window.location.href='/curve'">See the full curve &amp; ledger</button>
+          <button class="ghost" onclick="window.location.href='/paper'">Litepaper</button>
+        </div>
+        <div class="buybox-trust">🔒 Mint authority revoked · supply fixed at 1B · formula immutable · <a href="https://solscan.io/token/2Dgzi3jJbvt59cgiRRRECr9tHagqysGgQAV8fEjKswBJ" target="_blank" rel="noopener">verify on Solscan ↗</a></div>
       </div>
+      <script>
+      (function(){
+        // Frictionless buy box — the cash machine, on the landing. Live numbers from state.json
+        // (single source; the state-bot refreshes it hourly). Copy + Solana-Pay deeplink.
+        var copy=document.getElementById('buy-copy'), addrEl=document.getElementById('buy-addr');
+        if(copy&&addrEl){copy.addEventListener('click',function(){
+          var a=addrEl.textContent.trim();
+          function done(){copy.textContent='Copied ✓';copy.classList.add('copied');setTimeout(function(){copy.textContent='Copy address';copy.classList.remove('copied');},1800);}
+          if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(a).then(done).catch(done);}else{done();}
+        });}
+        fetch('/state.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){
+          if(!s)return;
+          if(s.receiving_wallet){addrEl.textContent=s.receiving_wallet;
+            var w=document.getElementById('buy-wallet');if(w)w.href='solana:'+s.receiving_wallet+'?label=AGENT%20curve';}
+          var f=function(id,v){var e=document.getElementById(id);if(e&&v!=null)e.textContent=v;};
+          if(s.total_sol!=null)f('bs-sol',(+s.total_sol).toLocaleString(undefined,{maximumFractionDigits:2}));
+          if(s.contributors!=null)f('bs-contrib',s.contributors);
+          if(s.current_tokens_per_sol!=null)f('bs-rate',Math.round(s.current_tokens_per_sol).toLocaleString());
+        }).catch(function(){});
+      })();
+      </script>
     </div>
 
     <div class="term" aria-hidden="true">
